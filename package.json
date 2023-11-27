@@ -5,15 +5,17 @@
     "main": "server.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node web-app/server.js"
+        "start": "nodemon web-app/server.js"
     },
     "license": "MIT",
     "dependencies": {
         "express": "^4.17.1",
         "express-session": "^1.17.1",
-        "npm-install-all": "^1.1.21"
+        "npm-install-all": "^1.1.21",
+        "http": "0.0.0"
     },
     "devDependencies": {
-        "fast-check": "^2.14.0"
+        "fast-check": "^2.14.0",
+        "nodemon": "^2.0.2"
     }
 }
