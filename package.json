@@ -2,9 +2,15 @@
     "name": "audio-exposure-project-web-app",
     "type": "module",
     "version": "1.0.0",
-    "main": "./web-app/server.js",
+    "main": "server.js",
     "scripts": {
-        "start": "node ./web-app/server.js"
+        "serve": "nodemon --watch . server.js",
+        "start": "node server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mlm20/audio-exposure-project-web-app.git"
     },
     "license": "MIT",
     "dependencies": {
@@ -13,6 +19,7 @@
         "npm-install-all": "^1.1.21"
     },
     "devDependencies": {
-        "fast-check": "^2.14.0"
+        "fast-check": "^2.14.0",
+        "nodemon": "^2.0.22"
     }
 }
