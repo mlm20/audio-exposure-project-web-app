@@ -2,9 +2,9 @@
     "name": "audio-exposure-project-web-app",
     "type": "module",
     "version": "1.0.0",
-    "main": "web-app/server.js",
+    "main": "./web-app/server.js",
     "scripts": {
-        "start": "node web-app/server.js"
+        "start": "node ./web-app/server.js"
     },
     "license": "MIT",
     "dependencies": {
