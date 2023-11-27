@@ -1,4 +1,4 @@
-import Algorithm from "RCV_algorithm.js";
+const Algorithm = require("RCV_algorithm.js");
 const Handler = Object.create(null);
 
 Handler.results = function (request_object) {
