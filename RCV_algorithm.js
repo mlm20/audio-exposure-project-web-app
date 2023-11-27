@@ -224,4 +224,4 @@ Algorithm.percentage_of_winner = function (raw_data) {
 Algorithm.how_many_rounds = (raw_data) => Algorithm.results(raw_data).length;
 
 // export module
-export default Object.freeze(Algorithm);
+module.exports = Object.freeze(Algorithm);
