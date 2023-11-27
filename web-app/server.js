@@ -5,7 +5,7 @@ const app = express();
 // Misc imports
 import Handler from "handler.js";
 
-app.use("/", express.static("src/static"));
+app.use("/", express.static("./static"));
 
 app.use("/", express.json());
 app.post("/", function (req, res) {
