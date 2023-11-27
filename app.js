@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require("path");
 const app = express();
+const Handler = require("./handler");
 
 // #############################################################################
 // Logs all request paths and method
@@ -36,6 +37,18 @@ var options = {
     redirect: false,
 };
 app.use(express.static("public", options));
+
+// #############################################################################
+// New route for handling POST requests
+app.post("/", express.json(), (req, res) => {
+    const request_object = req.body;
+
+    Handler[request_object.type](request_object).then(function (
+        response_object
+    ) {
+        res.json(response_object);
+    });
+});
 
 // #############################################################################
 // Catch all handler for all other request.
