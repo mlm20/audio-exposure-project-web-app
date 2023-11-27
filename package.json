@@ -2,20 +2,17 @@
     "name": "audio-exposure-project-web-app",
     "type": "module",
     "version": "1.0.0",
-    "main": "server.js",
+    "main": "web-app/server.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "nodemon web-app/server.js"
+        "start": "node web-app/server.js"
     },
     "license": "MIT",
     "dependencies": {
         "express": "^4.17.1",
         "express-session": "^1.17.1",
-        "npm-install-all": "^1.1.21",
-        "http": "0.0.0"
+        "npm-install-all": "^1.1.21"
     },
     "devDependencies": {
-        "fast-check": "^2.14.0",
-        "nodemon": "^2.0.2"
+        "fast-check": "^2.14.0"
     }
 }
