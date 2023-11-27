@@ -14,4 +14,4 @@ Handler.results = function (request_object) {
     });
 };
 
-export default Object.freeze(Handler);
+module.exports = Object.freeze(Handler);
