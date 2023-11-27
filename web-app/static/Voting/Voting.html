@@ -1,0 +1,57 @@
+<!-- Header -->
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ranked Choice Voting Calculator</title>
+        <link rel="stylesheet" href="VotingStyle.css" />
+        <link rel="shortcut icon" href="../../voting-box.png" />
+        <script type="module" src="Voting.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    </head>
+
+    <!-- Document Start -->
+
+    <header>
+        <h1>Voting</h1>
+    </header>
+
+    <main>
+        <div id="VotingTableContainer"></div>
+
+        <div id="Sidebar">
+            <div class="padding-div">
+                <div id="VoteCounterArea">
+                    <div id="CounterLabel">
+                        Number of Votes
+                    </div>
+
+                    <div id="Vote-Counter">
+                        0
+                    </div>
+                </div>
+
+                <div id="seperator">
+                    You must use all your votes - pick a candidate for each
+                    choice.
+                </div>
+
+                <input id="NextVoterButton" type="button" value="Next Voter" />
+
+                <input
+                    id="SeeResultsButton"
+                    type="button"
+                    value="See Results"
+                />
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Maximilian Matthews | DE1 Computing 2: Applications | Imperial
+        College London
+    </footer>
+</html>

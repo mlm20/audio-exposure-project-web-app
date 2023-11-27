@@ -1,0 +1,188 @@
+* {
+    font-family: Inter, sans-serif;
+    background-color: #f5f5f5;
+}
+
+header {
+    margin: auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: 40pt;
+}
+
+h2 {
+    background-color: white;
+}
+
+h3 {
+    background-color: white;
+}
+
+div {
+    background-color: white;
+}
+
+.padding-div {
+    padding: 20px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: white;
+}
+
+main {
+    grid-area: main;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+#CandidateBox {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+    width: 420px;
+    height: 520;
+    background-color: white;
+    outline: solid;
+    outline-width: 2px;
+}
+
+#candidate-input-field {
+    height: 80px;
+    border: 2px solid #000;
+    padding: 0 17px;
+    background-color: white;
+}
+
+#Candidate-Content {
+    display: flex;
+    gap: 10px;
+    outline: solid;
+    outline-width: 2px;
+    height: fit-content;
+    background-color: white;
+    height: 520px;
+    width: 420px;
+}
+
+#Candidate_list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#add-candidate-button {
+    align-items: center;
+    background-color: #fff;
+    border: 2px solid #000;
+    box-sizing: border-box;
+    color: #000;
+    cursor: pointer;
+    display: inline-flex;
+    fill: #000;
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    height: 48px;
+    justify-content: center;
+    letter-spacing: -0.8px;
+    line-height: 24px;
+    min-width: 140px;
+    outline: 0;
+    padding: 0 17px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+#add-candidate-button:hover {
+    border-color: #06f;
+    color: #06f;
+    fill: #06f;
+}
+
+#add-candidate-button:focus {
+    color: #171e29;
+}
+
+#add-candidate-button:active {
+    border-color: #06f;
+    color: #06f;
+    fill: #06f;
+}
+
+#start-election-button {
+    align-items: center;
+    background-color: #06f;
+    border: 2px solid #06f;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    fill: #000;
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    height: 48px;
+    justify-content: center;
+    letter-spacing: -0.8px;
+    line-height: 24px;
+    min-width: 140px;
+    outline: 0;
+    padding: 0 17px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+#start-election-button:hover {
+    background-color: #3385ff;
+    border-color: #3385ff;
+    fill: #06f;
+}
+
+#start-election-button:active {
+    background-color: #3385ff;
+    border-color: #3385ff;
+    fill: #06f;
+}
+
+#start-election-button:focus {
+    color: #171e29;
+}
+
+#AboutBox {
+    width: 420px;
+    height: 520px;
+    outline: solid;
+    outline-width: 2px;
+    background-color: white;
+}
+
+p {
+    background-color: white;
+}
+
+a {
+    background-color: white;
+}
+
+footer {
+    grid-area: footer;
+    font-size: smaller;
+    font-weight: light;
+    margin: auto;
+    padding-top: 40px;
+    text-align: center;
+}

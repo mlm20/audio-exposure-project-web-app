@@ -1,0 +1,107 @@
+<!-- Header -->
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ranked Choice Voting Calculator</title>
+        <link rel="stylesheet" href="default.css" />
+        <link rel="shortcut icon" href="../../voting-box.png" />
+        <script type="module" src="main.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    </head>
+
+    <!-- Document Start -->
+    <section class="layout">
+        <header>
+            <h1>Ranked Choice Voting Calculator</h1>
+        </header>
+
+        <main>
+            <div id="CandidateBox">
+                <div class="padding-div">
+                    <h2>Candidate Setup</h2>
+
+                    <div>
+                        Input the candidates/options for the RCV
+                        election using the field below (they should
+                        appear on the side).
+                    </div>
+
+                    <div>
+                        Once ready, start the election with the button
+                        at the bottom of this page.
+                    </div>
+
+                    <input type="text" id="candidate-input-field" />
+
+                    <input
+                        type="button"
+                        value="Add Candidate"
+                        id="add-candidate-button"
+                    />
+
+                    <input
+                        type="button"
+                        value="Start Election"
+                        id="start-election-button"
+                    />
+                </div>
+            </div>
+
+            <div id="Candidate-Content">
+                <div class="padding-div">
+                    <div id="Candidate_list">
+
+                        <h2>List of Candidates</h2>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="AboutBox">
+                <div class="padding-div">
+                    <h2>About</h2>
+
+                    <div>
+                        Ranked Choice Voting (RCV) helps to elect a candidate
+                        who reflects a majority of voters in a single election
+                        even when several viable candidates are in the race. RCV
+                        is a way to ensure elections are fair for all voters. It
+                        allows voters the option to rank candidates in order of
+                        preference: one, two, three, and so forth.
+                    </div>
+
+                    <div>
+                        This calculator is for races where voters select one
+                        winner. If a candidate receives more than half of the
+                        first choices, that candidate wins, just like in any
+                        other election. However, if there is no majority winner
+                        after counting first choices, the race is decided by an
+                        "instant runoff." The candidate with the fewest votes is
+                        eliminated, and voters who picked that candidate as
+                        ‘number 1’ will have their votes count for their next
+                        choice. This process continues until there’s a majority
+                        winner or a candidate won with more than half of the
+                        vote.
+                    </div>
+
+                    <div>
+                        Reference:
+                        <a
+                            href="https://fairvote.org/our-reforms/ranked-choice-voting-information/"
+                            >FairVote</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            Maximilian Matthews | DE1 Computing 2: Applications | Imperial
+            College London
+        </footer>
+    </section>
+</html>
