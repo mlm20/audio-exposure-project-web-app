@@ -1,6 +1,5 @@
 {
     "name": "audio-exposure-project-web-app",
-    "type": "module",
     "version": "1.0.0",
     "main": "server.js",
     "scripts": {
