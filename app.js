@@ -1,8 +1,10 @@
 // Imports
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
+
+// Create app
 const app = express();
-const Handler = require("./handler");
 
 // #############################################################################
 // Logs all request paths and method
@@ -39,15 +41,47 @@ var options = {
 app.use(express.static("public", options));
 
 // #############################################################################
-// New route for handling POST requests
-app.post("/", express.json(), (req, res) => {
-    const request_object = req.body;
+// Handle notifications
 
-    Handler[request_object.type](request_object).then(function (
-        response_object
-    ) {
-        res.json(response_object);
-    });
+// Function to load notifications from the JSON file
+const loadNotifications = function () {
+    try {
+        const data = fs.readFileSync("notifications.json", "utf8");
+        return JSON.parse(data) || [];
+    } catch (error) {
+        console.error("Error loading notifications:", error.message);
+        return [];
+    }
+};
+
+// Function to save notifications to the JSON file
+const saveNotifications = function (notifications) {
+    try {
+        fs.writeFileSync("notifications.json", JSON.stringify(notifications));
+    } catch (error) {
+        console.error("Error saving notifications:", error.message);
+    }
+};
+
+// Endpoint to trigger an event and record a notification
+app.get("/trigger-event", (req, res) => {
+    // This is where you put the code for your event
+    const notification = { message: "Event triggered", timestamp: new Date() };
+
+    // Load existing notifications, add the new one, and save it back
+    const notifications = loadNotifications();
+    notifications.push(notification);
+    saveNotifications(notifications);
+
+    // Send a response to the client
+    res.json({ success: true, message: "Event triggered" });
+});
+
+// Endpoint to get all notifications
+app.get("/get-notifications", (req, res) => {
+    // Load notifications and send them as a JSON response to the client
+    const notifications = loadNotifications();
+    res.json(notifications);
 });
 
 // #############################################################################

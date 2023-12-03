@@ -1,54 +1,50 @@
-const add_candidate_button = document.getElementById("add-candidate-button");
-const start_election = document.getElementById("start-election-button");
-const candidate_input_text = document.getElementById("candidate-input-field");
-const candidate_list_area = document.getElementById("Candidate_list");
+// Initialisation
+const testButton = document.getElementById("testButton");
+const notificationsSection = document.getElementById("notificationsSection");
 
-const push_to_session_storage = function (input) {
-    let JSON_String = JSON.stringify(input);
-    sessionStorage.setItem("candidate_list", JSON_String);
+// #############################################################################
+// Notifications
+
+//// Fetch notifications
+
+// Function to update the notifications UI
+const updateNotificationsUI = function (notifications) {
+    notificationsSection.innerHTML = ""; // Clear existing content
+
+    notifications.forEach((notification) => {
+        const notificationElement = document.createElement("div");
+        notificationElement.textContent = `${notification.message} - ${notification.timestamp}`;
+        notificationsSection.appendChild(notificationElement);
+    });
 };
 
-const reset_text_field = function (text_field_id) {
-    document.getElementById(text_field_id).value = "";
-}; // clears the text for input field
-
-const add_name_to_pane = function (name) {
-    let node = document.createElement("div");
-    let textnode = document.createTextNode(name);
-    node.appendChild(textnode);
-    candidate_list_area.appendChild(node);
+// Function to fetch notifications and update UI
+const fetchNotificationsAndUpdateUI = function () {
+    fetch("/get-notifications")
+        .then((response) => response.json())
+        .then((notifications) => {
+            // Update the UI with the notifications
+            updateNotificationsUI(notifications);
+        })
+        .catch((error) =>
+            console.error("Error fetching notifications:", error)
+        );
 };
 
-const Candidate_List = []; // declaration of candidate list
+// Notification test button
+testButton.addEventListener("click", function () {
+    // Make an HTTP request to trigger the event
+    fetch("/trigger-event", { method: "GET" })
+        .then((response) => response.json())
+        .then((data) => {
+            // Handle the response from the server (if needed)
+            console.log(data);
 
-add_candidate_button.onclick = function () {
-    if (candidate_input_text.value !== "") {
-        console.log(candidate_input_text.value);
+            // After triggering the event, fetch and update notifications
+            fetchNotificationsAndUpdateUI();
+        })
+        .catch((error) => console.error("Error triggering event:", error));
+});
 
-        // add candidate name to array
-        Candidate_List.push(candidate_input_text.value);
-
-        // push array to session storage
-        push_to_session_storage(Candidate_List);
-
-        // adds candidate name to sidebar
-        add_name_to_pane(candidate_input_text.value);
-
-        // clear candidate input field
-        reset_text_field("candidate-input-field");
-        return;
-    }
-    if (candidate_input_text.value === "") {
-        console.log("Candidate input field was empty");
-        window.alert("Candidate input field was empty");
-    }
-};
-
-start_election.onclick = function () {
-    if (Candidate_List.length >= 2) {
-        console.log("Election started");
-        location.href = "./Voting/Voting.html";
-    } else {
-        window.alert("You must input at least two candidates.");
-    }
-};
+// Initial fetch and update when the page loads
+fetchNotificationsAndUpdateUI();
