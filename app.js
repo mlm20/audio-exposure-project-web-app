@@ -83,6 +83,23 @@ app.get("/get-notifications", (req, res) => {
     res.json(notifications);
 });
 
+// Endpoint to dismiss a notification
+app.post("/dismiss-notification", express.json(), (req, res) => {
+    const dismissedNotification = req.body;
+
+    // Load existing notifications, remove the dismissed one, and save them back
+    const notifications = loadNotifications();
+    const updatedNotifications = notifications.filter((notification) => {
+        // Assuming the timestamp uniquely identifies a notification
+        return notification.timestamp !== dismissedNotification.timestamp;
+    });
+
+    saveNotifications(updatedNotifications);
+
+    // Send a response to the client
+    res.json({ success: true, message: "Notification dismissed" });
+});
+
 // #############################################################################
 // Catch all handler for all other request.
 app.use("*", (req, res) => {
