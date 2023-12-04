@@ -1,4 +1,16 @@
+// #############################################################################
 // Initialisation
+const Chart = require("chart.js");
+
+// Configuration for ThingSpeak
+const thingspeakChannelId = "2363431";
+const thingspeakReadAPIKey = "80YIH02KW5FXTKXA";
+const resultsNum = 1000;
+const thingspeakDataURL = `https://api.thingspeak.com/channels/${thingspeakChannelId}/feeds.json?api_key=${thingspeakReadAPIKey}&results=${resultsNum}`;
+
+// Chart update frequency (ms)
+const updateTime = 10 * 1000;
+
 const testButton = document.getElementById("testButton");
 const notificationsSection = document.getElementById("notificationsSection");
 
@@ -104,3 +116,66 @@ testButton.addEventListener("click", function () {
 
 // Initial fetch and update when the page loads
 fetchNotificationsAndUpdateUI();
+
+// #############################################################################
+// dB graph
+
+// Configure Chart.js
+const ctx = document.getElementById("decibelChart").getContext("2d");
+const chart = new Chart(ctx, {
+    type: "line",
+    data: {
+        labels: [],
+        datasets: [
+            {
+                label: "Sound Level (dB)",
+                data: [],
+                borderColor: "blue",
+                borderWidth: 1,
+                fill: false,
+            },
+        ],
+    },
+    options: {
+        scales: {
+            x: {
+                type: "linear",
+                position: "bottom",
+            },
+            y: {
+                beginAtZero: true,
+            },
+        },
+    },
+});
+
+// Function to fetch data from ThingSpeak
+const fetchData = async function () {
+    try {
+        const response = await fetch(thingspeakDataURL);
+        const data = await response.json();
+        return data.feeds.map((feed) => ({
+            timestamp: new Date(feed.created_at).toLocaleTimeString(),
+            decibel: parseFloat(feed.field1),
+        }));
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return [];
+    }
+};
+
+// Function to update chart with new data
+const updateChart = function (newData) {
+    chart.data.labels = newData.map((data) => data.timestamp);
+    chart.data.datasets[0].data = newData.map((data) => data.decibel);
+    chart.update();
+};
+
+// Function to periodically update the chart with new data
+const updateChartPeriodically = async function () {
+    const newData = await fetchData();
+    updateChart(newData);
+};
+
+// Update the chart every 5 minutes (adjust as needed)
+setInterval(updateChartPeriodically, updateTime);
