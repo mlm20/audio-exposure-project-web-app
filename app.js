@@ -1,6 +1,6 @@
 // Imports
 const express = require("express");
-const fs = require("fs");
+// const fs = require("fs");
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 const bodyParser = require("body-parser");
@@ -67,7 +67,9 @@ const initializeNotificationsFile = async function () {
                     ContentType: "application/json",
                 })
                 .promise();
-            console.log("notifications.json created and initialized with an empty array.");
+            console.log(
+                "notifications.json created and initialized with an empty array."
+            );
         } else {
             // Handle other errors
             console.error("Error checking notifications.json:", error);
