@@ -159,7 +159,10 @@ app.delete("/delete-notifications", async (req, res) => {
 // Endpoint to trigger an event and record a notification
 app.get("/trigger-event", async (req, res) => {
     // This is where you put the code for your event
-    const notification = { message: "Event triggered", timestamp: new Date().toLocaleString() };
+    const notification = {
+        message: "Event triggered",
+        timestamp: new Date().toLocaleString("en-GB", { timeZone: "UTC" }),
+    };
 
     try {
         // Fetch the existing notifications from S3
