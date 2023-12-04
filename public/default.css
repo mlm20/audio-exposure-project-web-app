@@ -87,10 +87,21 @@ footer {
 }
 
 .dismissIcon {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     padding: 0px;
     margin: 0px;
+    background-color: inherit;
+}
+
+.dismissButton {
+    border: none;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: inherit;
 }
 
 .notificationElement {
@@ -99,7 +110,7 @@ footer {
     justify-content: space-between;
     padding: 5px;
     background-color: #06f;
-    /* outline: 1.5px solid gray; */
+    outline: 1.5px solid navy;
     border-radius: 3px;
     color: whitesmoke;
 }
