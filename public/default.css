@@ -138,3 +138,8 @@ footer {
     flex-direction: column;
     gap: 10px;
 }
+
+#decibelChart {
+    width: 400;
+    height: 250;
+}
