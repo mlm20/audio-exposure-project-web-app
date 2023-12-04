@@ -9,6 +9,9 @@ const bodyParser = require("body-parser");
 const app = express();
 app.use(bodyParser.json());
 
+// AWS bucket name
+const bucketName = "cyclic-raspberry-quail-tutu-eu-west-2";
+
 // #############################################################################
 // Logs all request paths and method
 app.use(function (req, res, next) {
@@ -53,7 +56,7 @@ app.get("/get-notifications", async (req, res) => {
     try {
         const s3File = await s3
             .getObject({
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: filename,
             })
             .promise();
@@ -77,7 +80,7 @@ app.post("/save-notification", async (req, res) => {
     try {
         const existingNotifications = await s3
             .getObject({
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: filename,
             })
             .promise();
@@ -90,7 +93,7 @@ app.post("/save-notification", async (req, res) => {
         await s3
             .putObject({
                 Body: JSON.stringify(notifications),
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: filename,
             })
             .promise();
@@ -109,7 +112,7 @@ app.delete("/delete-notifications", async (req, res) => {
     try {
         await s3
             .deleteObject({
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: filename,
             })
             .promise();
@@ -133,7 +136,7 @@ app.get("/trigger-event", async (req, res) => {
         // Fetch the existing notifications from S3
         const existingNotifications = await s3
             .getObject({
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: "notifications.json",
             })
             .promise();
@@ -148,7 +151,7 @@ app.get("/trigger-event", async (req, res) => {
         await s3
             .putObject({
                 Body: JSON.stringify(notifications),
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: "notifications.json",
             })
             .promise();
@@ -169,7 +172,7 @@ app.post("/dismiss-notification", express.json(), async (req, res) => {
         // Fetch the existing notifications from S3
         const existingNotifications = await s3
             .getObject({
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: "notifications.json",
             })
             .promise();
@@ -187,7 +190,7 @@ app.post("/dismiss-notification", express.json(), async (req, res) => {
         await s3
             .putObject({
                 Body: JSON.stringify(updatedNotifications),
-                Bucket: process.env.BUCKET,
+                Bucket: bucketName,
                 Key: "notifications.json",
             })
             .promise();
