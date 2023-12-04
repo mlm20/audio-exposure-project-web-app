@@ -152,6 +152,7 @@ const fetchData = async function () {
     try {
         const response = await fetch(thingspeakDataURL);
         const data = await response.json();
+        console.log("Fetched data:", data);
         return data.feeds.map((feed) => ({
             timestamp: new Date(feed.created_at).toLocaleTimeString(),
             decibel: parseFloat(feed.field1),
@@ -164,6 +165,7 @@ const fetchData = async function () {
 
 // Function to update chart with new data
 const updateChart = function (newData) {
+    console.log("Updating chart with data:", newData);
     chart.data.labels = newData.map((data) => data.timestamp);
     chart.data.datasets[0].data = newData.map((data) => data.decibel);
     chart.update();
