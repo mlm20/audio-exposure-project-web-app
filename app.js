@@ -49,6 +49,33 @@ app.use(express.static("public", options));
 // #############################################################################
 // Handle notifications
 
+// Function to initialize notifications file with an empty array if it doesn't exist
+const initializeNotificationsFile = async function () {
+    const filename = "notifications.json";
+
+    try {
+        // Check if the file exists in S3
+        await s3.headObject({ Bucket: bucketName, Key: filename }).promise();
+    } catch (error) {
+        if (error.code === "NotFound") {
+            // File doesn't exist; create and initialize with an empty array
+            await s3
+                .putObject({
+                    Body: "[]",
+                    Bucket: bucketName,
+                    Key: filename,
+                    ContentType: "application/json",
+                })
+                .promise();
+            console.log("notifications.json created and initialized with an empty array.");
+        } else {
+            // Handle other errors
+            console.error("Error checking notifications.json:", error);
+        }
+    }
+};
+initializeNotificationsFile();
+
 // Retrieve JSON notifications from S3
 app.get("/get-notifications", async (req, res) => {
     const filename = "notifications.json";
