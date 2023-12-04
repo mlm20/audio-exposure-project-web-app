@@ -53,7 +53,7 @@ const updateNotificationsUI = function (notifications) {
 
         // Update text content of notification element
         notifMessage.textContent = notification.message;
-        notifTime.textContent = notification.timestamp;
+        notifTime.textContent = notification.timestamp.toLocaleString();
 
         // Append to container
         copyContainer.appendChild(notifMessage);
