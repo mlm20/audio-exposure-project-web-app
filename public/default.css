@@ -87,8 +87,37 @@ footer {
 }
 
 .dismissIcon {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.notificationElement {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px;
+    background-color: #06f;
+    /* outline: 1.5px solid gray; */
+    border-radius: 3px;
+    color: whitesmoke;
+}
+
+.copyContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: inherit;
+}
+
+.notifMessage {
+    background-color: inherit;
+}
+
+.notifTime {
+    background-color: inherit;
+    font-size: smaller;
 }
 
 /* IDs */

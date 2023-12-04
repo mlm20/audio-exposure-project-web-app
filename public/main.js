@@ -52,6 +52,7 @@ const updateNotificationsUI = function (notifications) {
 
         // Create a dismiss button for each notification
         const dismissButton = document.createElement("button");
+        dismissButton.classList.add("dismissButton");
         const imgElement = document.createElement("img");
 
         imgElement.setAttribute("src", "images/dismissIcon.svg");
