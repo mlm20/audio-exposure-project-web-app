@@ -139,7 +139,13 @@ footer {
     gap: 10px;
 }
 
-#decibelChart {
+/* #dBgraphContainer {
     width: 400;
     height: 250;
+} */
+
+#dBgraph {
+    width: 450;
+    height: 260;
+    border: 1px solid #cccccc;
 }
