@@ -1,6 +1,6 @@
 // #############################################################################
 // Initialisation
-import Chart from "chart.js";
+import Chart from "chart.js/auto";
 
 // Configuration for ThingSpeak
 const thingspeakChannelId = "2363431";
