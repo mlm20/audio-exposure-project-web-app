@@ -29,12 +29,35 @@ const updateNotificationsUI = function (notifications) {
     notificationsSection.innerHTML = ""; // Clear existing content
 
     notifications.forEach((notification) => {
+        // Create elements
         const notificationElement = document.createElement("div");
-        notificationElement.textContent = `${notification.message} - ${notification.timestamp}`;
+        const copyContainer = document.createElement("div");
+        const notifMessage = document.createElement("div");
+        const notifTime = document.createElement("div");
+
+        // Add classes
+        notificationElement.classList.add("notificationElement");
+        copyContainer.classList.add("copyContainer");
+        notifMessage.classList.add("notifMessage");
+        notifTime.classList.add("notifTime");
+
+        // Update text content of notification element
+        notifMessage.textContent = notification.message;
+        notifTime.textContent = notification.timestamp;
+
+        // Append to container
+        copyContainer.appendChild(notifMessage);
+        copyContainer.appendChild(notifTime);
+        notificationElement.appendChild(copyContainer);
 
         // Create a dismiss button for each notification
         const dismissButton = document.createElement("button");
-        dismissButton.textContent = "Dismiss";
+        const imgElement = document.createElement("img");
+
+        imgElement.setAttribute("src", "images/dismissIcon.svg");
+        imgElement.classList.add("dismissIcon");
+        dismissButton.appendChild(imgElement);
+
         dismissButton.addEventListener("click", function () {
             // Remove the notification from the UI
             notificationElement.remove();
