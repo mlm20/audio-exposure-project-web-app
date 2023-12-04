@@ -1,6 +1,6 @@
 // #############################################################################
 // Initialisation
-const Chart = require("chart.js");
+import Chart from "chart.js";
 
 // Configuration for ThingSpeak
 const thingspeakChannelId = "2363431";
