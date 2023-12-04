@@ -111,7 +111,7 @@ footer {
     padding: 5px;
     background-color: #06f;
     outline: 1.5px solid navy;
-    border-radius: 3px;
+    /* border-radius: 3px; */
     color: whitesmoke;
 }
 
