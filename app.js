@@ -1,9 +1,13 @@
 // Imports
 const express = require("express");
 const fs = require("fs");
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3();
+const bodyParser = require("body-parser");
 
 // Create app
 const app = express();
+app.use(bodyParser.json());
 
 // #############################################################################
 // Logs all request paths and method
@@ -42,62 +46,158 @@ app.use(express.static("public", options));
 // #############################################################################
 // Handle notifications
 
-// Function to load notifications from the JSON file
-const loadNotifications = function () {
-    try {
-        const data = fs.readFileSync("notifications.json", "utf8");
-        return JSON.parse(data) || [];
-    } catch (error) {
-        console.error("Error loading notifications:", error.message);
-        return [];
-    }
-};
+// Retrieve JSON notifications from S3
+app.get("/get-notifications", async (req, res) => {
+    const filename = "notifications.json";
 
-// Function to save notifications to the JSON file
-const saveNotifications = function (notifications) {
     try {
-        fs.writeFileSync("notifications.json", JSON.stringify(notifications));
+        const s3File = await s3
+            .getObject({
+                Bucket: process.env.BUCKET,
+                Key: filename,
+            })
+            .promise();
+
+        res.json(JSON.parse(s3File.Body.toString()));
     } catch (error) {
-        console.error("Error saving notifications:", error.message);
+        if (error.code === "NoSuchKey") {
+            console.log(`No such key ${filename}`);
+            res.json([]); // Return an empty array if the file doesn't exist yet
+        } else {
+            console.log(error);
+            res.status(500).json({ error: "Internal Server Error" });
+        }
     }
-};
+});
+
+// Save JSON notifications to S3
+app.post("/save-notification", async (req, res) => {
+    const filename = "notifications.json";
+
+    try {
+        const existingNotifications = await s3
+            .getObject({
+                Bucket: process.env.BUCKET,
+                Key: filename,
+            })
+            .promise();
+
+        const notifications = JSON.parse(existingNotifications.Body.toString());
+
+        // Assuming req.body is a valid notification object
+        notifications.push(req.body);
+
+        await s3
+            .putObject({
+                Body: JSON.stringify(notifications),
+                Bucket: process.env.BUCKET,
+                Key: filename,
+            })
+            .promise();
+
+        res.json({ success: true, message: "Notification saved successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// Delete all notifications from S3
+app.delete("/delete-notifications", async (req, res) => {
+    const filename = "notifications.json";
+
+    try {
+        await s3
+            .deleteObject({
+                Bucket: process.env.BUCKET,
+                Key: filename,
+            })
+            .promise();
+
+        res.json({
+            success: true,
+            message: "Notifications deleted successfully",
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 // Endpoint to trigger an event and record a notification
-app.get("/trigger-event", (req, res) => {
+app.get("/trigger-event", async (req, res) => {
     // This is where you put the code for your event
     const notification = { message: "Event triggered", timestamp: new Date() };
 
-    // Load existing notifications, add the new one, and save it back
-    const notifications = loadNotifications();
-    notifications.push(notification);
-    saveNotifications(notifications);
+    try {
+        // Fetch the existing notifications from S3
+        const existingNotifications = await s3
+            .getObject({
+                Bucket: process.env.BUCKET,
+                Key: "notifications.json",
+            })
+            .promise();
 
-    // Send a response to the client
-    res.json({ success: true, message: "Event triggered" });
-});
+        // Parse the existing notifications
+        const notifications = JSON.parse(existingNotifications.Body.toString());
 
-// Endpoint to get all notifications
-app.get("/get-notifications", (req, res) => {
-    // Load notifications and send them as a JSON response to the client
-    const notifications = loadNotifications();
-    res.json(notifications);
+        // Add the new notification to the array
+        notifications.push(notification);
+
+        // Save the updated notifications back to S3
+        await s3
+            .putObject({
+                Body: JSON.stringify(notifications),
+                Bucket: process.env.BUCKET,
+                Key: "notifications.json",
+            })
+            .promise();
+
+        // Send a response to the client
+        res.json({ success: true, message: "Event triggered" });
+    } catch (error) {
+        console.error("Error triggering event:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 // Endpoint to dismiss a notification
-app.post("/dismiss-notification", express.json(), (req, res) => {
+app.post("/dismiss-notification", express.json(), async (req, res) => {
     const dismissedNotification = req.body;
 
-    // Load existing notifications, remove the dismissed one, and save them back
-    const notifications = loadNotifications();
-    const updatedNotifications = notifications.filter((notification) => {
-        // Assuming the timestamp uniquely identifies a notification
-        return notification.timestamp !== dismissedNotification.timestamp;
-    });
+    try {
+        // Fetch the existing notifications from S3
+        const existingNotifications = await s3
+            .getObject({
+                Bucket: process.env.BUCKET,
+                Key: "notifications.json",
+            })
+            .promise();
 
-    saveNotifications(updatedNotifications);
+        // Parse the existing notifications
+        const notifications = JSON.parse(existingNotifications.Body.toString());
 
-    // Send a response to the client
-    res.json({ success: true, message: "Notification dismissed" });
+        // Remove the dismissed notification from the array
+        const updatedNotifications = notifications.filter((notification) => {
+            // Assuming the timestamp uniquely identifies a notification
+            return notification.timestamp !== dismissedNotification.timestamp;
+        });
+
+        // Save the updated notifications back to S3
+        await s3
+            .putObject({
+                Body: JSON.stringify(updatedNotifications),
+                Bucket: process.env.BUCKET,
+                Key: "notifications.json",
+            })
+            .promise();
+
+        // Send a response to the client
+        res.json({ success: true, message: "Notification dismissed" });
+    } catch (error) {
+        console.error("Error dismissing notification:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 // #############################################################################
