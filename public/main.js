@@ -3,11 +3,11 @@
 // Configuration for ThingSpeak
 const thingspeakChannelId = "2363431";
 const thingspeakReadAPIKey = "80YIH02KW5FXTKXA";
-const resultsNum = 1000;
+const resultsNum = 50;
 const thingspeakDataURL = `https://api.thingspeak.com/channels/${thingspeakChannelId}/feeds.json?api_key=${thingspeakReadAPIKey}&results=${resultsNum}`;
 
 // Chart update frequency (ms)
-const updateTime = 10 * 1000;
+const updateTime = 60 * 1000;
 
 const testButton = document.getElementById("testButton");
 const notificationsSection = document.getElementById("notificationsSection");
