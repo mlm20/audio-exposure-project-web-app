@@ -7,7 +7,7 @@ const resultsNum = 50;
 const thingspeakDataURL = `https://api.thingspeak.com/channels/${thingspeakChannelId}/feeds.json?api_key=${thingspeakReadAPIKey}&results=${resultsNum}`;
 
 // Chart update frequency (ms)
-const updateTime = 60 * 1000;
+const updateTime = 10 * 1000;
 
 const testButton = document.getElementById("testButton");
 const notificationsSection = document.getElementById("notificationsSection");
@@ -153,6 +153,7 @@ const fetchData = async function () {
         const response = await fetch(thingspeakDataURL);
         const data = await response.json();
         console.log("Fetched data:", data);
+
         return data.feeds.map((feed) => ({
             timestamp: new Date(feed.created_at).toLocaleTimeString(),
             decibel: parseFloat(feed.field1),
@@ -166,8 +167,16 @@ const fetchData = async function () {
 // Function to update chart with new data
 const updateChart = function (newData) {
     console.log("Updating chart with data:", newData);
-    chart.data.labels = newData.map((data) => data.timestamp);
-    chart.data.datasets[0].data = newData.map((data) => data.decibel);
+
+    // Extract timestamps and decibel levels from the new data
+    const timestamps = newData.map((data) => data.timestamp);
+    const decibelLevels = newData.map((data) => data.decibel);
+
+    // Update the chart data
+    chart.data.labels = timestamps;
+    chart.data.datasets[0].data = decibelLevels;
+
+    // Update the chart
     chart.update();
 };
 
