@@ -1,7 +1,7 @@
 // Imports
 const express = require("express");
-// const fs = require("fs");
 const AWS = require("aws-sdk");
+const fetch = require("node-fetch");
 const s3 = new AWS.S3();
 const bodyParser = require("body-parser");
 
@@ -11,6 +11,13 @@ app.use(bodyParser.json());
 
 // AWS bucket name
 const bucketName = "cyclic-raspberry-quail-tutu-eu-west-2";
+
+// ThingSpeak API URL
+const ThingSpeakAPIURL = "https://api.thingspeak.com/channels/2363431/feeds.json?results=2";
+
+
+// Array to store recent sound level samples
+let soundLevelSamples = [];
 
 // #############################################################################
 // Logs all request paths and method
@@ -48,7 +55,6 @@ app.use(express.static("public", options));
 
 // #############################################################################
 // Handle notifications
-
 // Function to initialize notifications file with an empty array if it doesn't exist
 const initializeNotificationsFile = async function () {
     const filename = "notifications.json";
@@ -77,6 +83,68 @@ const initializeNotificationsFile = async function () {
     }
 };
 initializeNotificationsFile();
+
+// Function to fetch ThingSpeak data and calculate average sound level
+const fetchAndCalculateAverage = async () => {
+    try {
+        // Fetch data from ThingSpeak (replace with your actual fetching logic)
+        const thingSpeakData = await fetchThingSpeakData();
+
+        // Extract sound levels from the fetched data
+        const soundLevels = thingSpeakData.map((entry) => entry.soundLevel);
+
+        // Add the latest sound level to the samples array
+        soundLevelSamples.push(...soundLevels);
+
+        // Keep only samples from the last 2 minutes
+        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+        soundLevelSamples = soundLevelSamples.filter(
+            (sample) => new Date(sample.timestamp) > twoMinutesAgo
+        );
+
+        // Calculate average sound level
+        const averageSoundLevel =
+            soundLevelSamples.reduce((sum, sample) => sum + sample.level, 0) /
+            soundLevelSamples.length;
+
+        // If average level exceeds threshold, generate notification
+        if (averageSoundLevel > 80) {
+            const notification = {
+                message: `Audio threshold of 80dB exceeded! Current level: ${averageSoundLevel.toFixed(
+                    2
+                )}dB`,
+                timestamp: new Date().toISOString(),
+            };
+
+            // Save the notification to S3
+            await s3
+                .putObject({
+                    Body: JSON.stringify([notification]),
+                    Bucket: bucketName,
+                    Key: "notifications.json",
+                })
+                .promise();
+        }
+    } catch (error) {
+        console.error(
+            "Error fetching and calculating average sound level:",
+            error
+        );
+    }
+};
+
+// Function to fetch ThingSpeak data (replace with your actual logic)
+const fetchThingSpeakData = async () => {
+    const response = await fetch(ThingSpeakAPIURL);
+    const data = await response.json();
+    return data.feeds.map((entry) => ({
+        timestamp: entry.created_at,
+        soundLevel: entry.field1, // Adjust field name based on your ThingSpeak setup
+    }));
+};
+
+// Periodically fetch ThingSpeak data and calculate average sound level
+setInterval(fetchAndCalculateAverage, 5 * 1000); // Adjust the interval based on your data sampling frequency
 
 // Retrieve JSON notifications from S3
 app.get("/get-notifications", async (req, res) => {
@@ -236,7 +304,7 @@ app.post("/dismiss-notification", express.json(), async (req, res) => {
 });
 
 // #############################################################################
-// Catch all handler for all other request.
+// Catch all handler for all other requests
 app.use("*", (req, res) => {
     res.json({
         at: new Date().toISOString(),

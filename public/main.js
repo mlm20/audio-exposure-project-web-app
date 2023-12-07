@@ -1,10 +1,5 @@
 // #############################################################################
-
-// Configuration for ThingSpeak
-const thingspeakChannelId = "2363431";
-const thingspeakReadAPIKey = "80YIH02KW5FXTKXA";
-const resultsNum = 50;
-const thingspeakDataURL = `https://api.thingspeak.com/channels/${thingspeakChannelId}/feeds.json?api_key=${thingspeakReadAPIKey}&results=${resultsNum}`;
+// Init
 
 const testButton = document.getElementById("testButton");
 const notificationsSection = document.getElementById("notificationsSection");
@@ -111,3 +106,27 @@ testButton.addEventListener("click", function () {
 
 // Initial fetch and update when the page loads
 fetchNotificationsAndUpdateUI();
+
+// #############################################################################
+// Live dB display
+
+// Function to fetch live dB level from the server and update UI
+const fetchAndDisplayLiveDbLevel = () => {
+    fetch("/live-db-level")
+        .then((response) => response.json())
+        .then((data) => {
+            // Update the UI with the live dB level
+            updateLiveDbLevelUI(data.liveDbLevel);
+        })
+        .catch((error) => console.error("Error fetching live dB level:", error));
+};
+
+// Function to update live dB level UI
+const updateLiveDbLevelUI = (liveDbLevel) => {
+    // Update the UI element with the live dB level
+    const liveDbLevelElement = document.getElementById("liveDbLevel");
+    liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(2)}dB`;
+};
+
+// Periodically fetch live dB level and update UI
+setInterval(fetchAndDisplayLiveDbLevel, 5 * 1000); // Adjust the interval based on your data sampling frequency
