@@ -113,19 +113,17 @@ fetchNotificationsAndUpdateUI();
 // Live dB display
 
 // Function to update live dB level UI
-const updateLiveDbLevelUI = (liveDbLevel) => {
-    // Update the UI element with the live dB level
+const updateLiveDbLevelUI = (latestDbLevel, timestamp) => {
+    // Update the UI element with the latest dB level and timestamp
     const liveDbLevelElement = document.getElementById("liveDbLevel");
+    liveDbLevelElement.textContent = `Latest dB Level: ${latestDbLevel.toFixed(2)}dB (at ${timestamp})`;
+};
 
-    // Check if liveDbLevel is a valid number
-    if (typeof liveDbLevel === "number" && !isNaN(liveDbLevel)) {
-        liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(
-            2
-        )}dB`;
-    } else {
-        // Handle the case where liveDbLevel is not a valid number
-        liveDbLevelElement.textContent = "Live dB Level: N/A";
-    }
+// Function to update average dB level UI
+const updateAverageDbLevelUI = (averageDbLevel) => {
+    // Update the UI element with the average dB level
+    const averageDbLevelElement = document.getElementById("averageDbLevel");
+    averageDbLevelElement.textContent = `Average dB Level (Last 5 Minutes): ${averageDbLevel.toFixed(2)}dB`;
 };
 
 // Function to fetch live dB level from the server and update UI
@@ -134,13 +132,13 @@ const fetchAndDisplayLiveDbLevel = () => {
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
-            // Update the UI with the live dB level
-            updateLiveDbLevelUI(data.liveDbLevel);
+            // Update the UI with the live dB level and timestamp
+            updateLiveDbLevelUI(data.liveDbLevel, data.timestamp);
+
+            // Update the UI with the average dB level
+            updateAverageDbLevelUI(data.averageDbLevel);
         })
         .catch((error) =>
             console.error("Error fetching live dB level:", error)
         );
 };
-
-// Periodically fetch live dB level and update UI
-setInterval(fetchAndDisplayLiveDbLevel, updateFrequency); // Adjust the interval based on your data sampling frequency
