@@ -258,7 +258,7 @@ app.post("/dismiss-notification", express.json(), async (req, res) => {
 // Function to fetch ThingSpeak data and calculate average sound level
 const fetchAndCalculateAverage = async () => {
     try {
-        // Fetch data from ThingSpeak
+        // Fetch data from ThingSpeak (replace with your actual fetching logic)
         const thingSpeakData = await fetchThingSpeakData();
 
         // Extract sound levels from the fetched data
@@ -267,13 +267,13 @@ const fetchAndCalculateAverage = async () => {
         // Add the latest sound level to the samples array
         soundLevelSamples.push(...soundLevels);
 
-        // Keep only samples from the last 5 minutes
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        // Keep only samples from the last 2 minutes
+        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
         soundLevelSamples = soundLevelSamples.filter(
-            (sample) => new Date(sample.timestamp) > fiveMinutesAgo
+            (sample) => new Date(sample.timestamp) > twoMinutesAgo
         );
 
-        // Calculate average sound level over the last 5 minutes
+        // Calculate average sound level
         const averageSoundLevel =
             soundLevelSamples.reduce((sum, sample) => sum + sample.level, 0) /
             soundLevelSamples.length;
@@ -297,16 +297,17 @@ const fetchAndCalculateAverage = async () => {
                 .promise();
         }
 
-        // Emit the latest dB level and average dB level to clients
-        io.emit("dbLevels", {
-            latestDbLevel: soundLevels[0],
+        // Return both live and average dB levels
+        return {
+            liveDbLevel: soundLevels[0], // Assuming the latest entry is the first in the array
             averageDbLevel: averageSoundLevel,
-        });
+        };
     } catch (error) {
         console.error(
             "Error fetching and calculating average sound level:",
             error
         );
+        throw error;
     }
 };
 
