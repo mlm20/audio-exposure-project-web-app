@@ -116,7 +116,9 @@ fetchNotificationsAndUpdateUI();
 const updateLiveDbLevelUI = (latestDbLevel, timestamp) => {
     // Update the UI element with the latest dB level and timestamp
     const liveDbLevelElement = document.getElementById("liveDbLevel");
-    liveDbLevelElement.textContent = `Latest dB Level: ${latestDbLevel.toFixed(2)}dB
+    liveDbLevelElement.textContent = `Latest dB Level: ${latestDbLevel.toFixed(
+        2
+    )}dB
         (at ${timestamp})`;
 };
 
@@ -124,13 +126,16 @@ const updateLiveDbLevelUI = (latestDbLevel, timestamp) => {
 const updateAverageDbLevelUI = (averageDbLevel) => {
     // Update the UI element with the average dB level
     const averageDbLevelElement = document.getElementById("averageDbLevel");
-    averageDbLevelElement.textContent = `Average dB Level (Last 5 Minutes): ${averageDbLevel.toFixed(2)}dB`;
+    averageDbLevelElement.textContent = `Average dB Level (Last 5 Minutes): ${averageDbLevel.toFixed(
+        2
+    )}dB`;
 };
 
 // Function to fetch live dB level from the server and update UI
 const fetchAndDisplayLiveDbLevel = async () => {
     try {
-        const [latestDbLevel, averageDbLevel] = await fetchLiveDbLevelFromServer();
+        const [latestDbLevel, averageDbLevel] =
+            await fetchLiveDbLevelFromServer();
 
         updateLiveDbLevelUI(latestDbLevel, new Date().toISOString());
         updateAverageDbLevelUI(averageDbLevel);
@@ -140,13 +145,25 @@ const fetchAndDisplayLiveDbLevel = async () => {
 };
 
 async function fetchLiveDbLevelFromServer() {
-    const response = await fetch("/live-db-level");
-    const data = await response.json();
+    try {
+        const response = await fetch("/live-db-level");
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-    if (data.liveDbLevel && data.averageDbLevel) {
-        return [data.liveDbLevel, data.averageDbLevel];
-    } else {
-        throw new Error("Invalid response from server");
+        const data = await response.json();
+
+        if (
+            data.liveDbLevel !== undefined &&
+            data.averageDbLevel !== undefined
+        ) {
+            return [data.liveDbLevel, data.averageDbLevel];
+        } else {
+            throw new Error("Invalid response from server");
+        }
+    } catch (error) {
+        console.error("Error fetching live dB level:", error);
+        throw error; // Rethrow the error to be caught by the calling function
     }
 }
 
