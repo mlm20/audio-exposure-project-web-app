@@ -141,7 +141,7 @@ const fetchSoundLevelData = async function () {
         }
 
         // Debug statements
-        console.log(response);
+        console.log(response.json());
 
         // Return the fetched data if there's no problem
         return response.json();
