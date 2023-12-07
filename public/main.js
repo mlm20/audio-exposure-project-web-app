@@ -1,5 +1,5 @@
 // #############################################################################
-// Setu
+// Setup
 
 const testButton = document.getElementById("testButton");
 const notificationsSection = document.getElementById("notificationsSection");
@@ -130,38 +130,42 @@ const updateAverageDbLevelUI = (averageDbLevel, timestamp) => {
     averageDbTimestamp.textContent = String(timestamp);
 };
 
-const fetchSoundLevelData = function () {
-    // Fetch from backend endpoint
-    fetch("/live-db-data")
-        .then((response) => {
-            // Throw error if there's a problem with fetching the data
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+const fetchSoundLevelData = async function () {
+    try {
+        // Fetch from backend endpoint
+        const response = await fetch("/live-db-data");
 
-            // Return the fetched data if there's no problem
-            return response.json();
-        })
-        .catch((error) =>
-            console.error("Error fetching data from server:", error)
-        );
+        // Throw error if there's a problem with fetching the data
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Return the fetched data if there's no problem
+        return response.json();
+    } catch (error) {
+        console.error("Error fetching data from server:", error);
+    }
 };
 
 // Container function to run fetch function and run UI update functions
 const fetchAndUpdateUI = async function () {
-    // Fetch data
-    const responseJSON = await fetchSoundLevelData();
+    try {
+        // Fetch data
+        const responseJSON = await fetchSoundLevelData();
 
-    // Update live dB
-    updateLiveDbLevelUI(
-        String(responseJSON.latestValue[0]),
-        String(responseJSON.latestValue[1])
-    );
+        // Update live dB
+        updateLiveDbLevelUI(
+            String(responseJSON.latestValue[0]),
+            String(responseJSON.latestValue[1])
+        );
 
-    updateAverageDbLevelUI(
-        String(responseJSON.averageValue[0]),
-        String(responseJSON.averageValue[1])
-    );
+        updateAverageDbLevelUI(
+            String(responseJSON.averageValue[0]),
+            String(responseJSON.averageValue[1])
+        );
+    } catch (error) {
+        console.error("Error updating UI:", error);
+    }
 };
 
 // Schedule a function to fetch and display live dB level every 10 seconds
