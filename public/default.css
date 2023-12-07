@@ -131,6 +131,16 @@ footer {
     font-size: smaller;
 }
 
+.inddBContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dBTimestamp {
+    font-size: smaller;
+}
+
 /* IDs */
 
 #notificationsSection {
@@ -145,6 +155,5 @@ footer {
 }
 
 #dBIndicatorContainer {
-    display: flex;
-    flex-direction: row;
+    font-size: medium;
 }

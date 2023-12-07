@@ -1,28 +1,19 @@
 // Imports
 const express = require("express");
 const AWS = require("aws-sdk");
-const http = require("http");
 const fetch = require("isomorphic-fetch");
 const s3 = new AWS.S3();
 const bodyParser = require("body-parser");
-const socketIO = require("socket.io");
 
 // Create app
 const app = express();
 app.use(bodyParser.json());
 
-const server = http.createServer(app);
-const io = socketIO(server);
-
 // AWS bucket name
 const bucketName = "cyclic-raspberry-quail-tutu-eu-west-2";
 
-// ThingSpeak API URL
-const ThingSpeakAPIURL =
-    "https://api.thingspeak.com/channels/2363431/feeds.json?results=2";
-
 // dB threshold
-const dBthreshold = 40;
+const dBthreshold = 80;
 
 // Frequency at which data is fetched from ThingSpeak
 const fetchRate = 10 * 1000;
@@ -255,124 +246,79 @@ app.post("/dismiss-notification", express.json(), async (req, res) => {
 // #############################################################################
 // Accessing ThingSpeak data
 
-// Function to fetch ThingSpeak data and calculate average sound level
-const fetchAndCalculateAverage = async () => {
-    try {
-        // Fetch data from ThingSpeak
-        const thingSpeakData = await fetchThingSpeakData();
+// Constants
+// ThingSpeak API URL
+const ThingSpeakAPIURL =
+    "https://api.thingspeak.com/channels/2363431/feeds.json?results=";
 
-        // Extract timestamp and sound level from the latest entry
-        const latestEntry = thingSpeakData[0];
-        const latestTimestamp = latestEntry.timestamp;
-        const latestSoundLevel = parseFloat(latestEntry.soundLevel);
+// Function to get ThingSpeak data JSON
+const getThingSpeakData = async (numSamples) => {
+    // Function inputs determines the number of data samples fetched
+    const URL = String(ThingSpeakAPIURL + numSamples);
 
-        // Add the latest timestamp and sound level to the samples array
-        soundLevelSamples.push({
-            timestamp: latestTimestamp,
-            soundLevel: latestSoundLevel,
-        });
-
-        // Keep only samples from the last 5 minutes
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-        soundLevelSamples = soundLevelSamples.filter((sample) => {
-            return new Date(sample.timestamp) > fiveMinutesAgo;
-        });
-
-        // Calculate average sound level
-        const sum = soundLevelSamples.reduce((acc, sample) => acc + sample.soundLevel, 0);
-        const averageSoundLevel = sum / soundLevelSamples.length;
-
-        // If average level exceeds threshold, generate notification
-        if (averageSoundLevel > dBthreshold) {
-            const notification = {
-                message: `Audio threshold of ${dBthreshold}dB exceeded! Current level: ${averageSoundLevel.toFixed(2)}dB`,
-                timestamp: new Date().toISOString(),
-            };
-
-            // Save the notification to S3
-            await s3
-                .putObject({
-                    Body: JSON.stringify([notification]),
-                    Bucket: bucketName,
-                    Key: "notifications.json",
-                })
-                .promise();
-        }
-
-        // Return both live and average dB levels
-        return {
-            liveDbLevel: latestSoundLevel,
-            averageDbLevel: averageSoundLevel,
-        };
-    } catch (error) {
-        console.error("Error fetching and calculating average sound level:", error);
-        throw error; // Rethrow the error to be caught by the calling function
-    }
-};
-
-// Function to fetch ThingSpeak data
-const fetchThingSpeakData = async () => {
-    // Retry configuration
-    const maxRetries = 3;
-    let retries = 0;
-
-    while (retries < maxRetries) {
-        try {
-            const response = await fetch(ThingSpeakAPIURL);
-            const data = await response.json();
-
-            // Check if the response contains valid data
-            if (data && data.feeds) {
-                return data.feeds.map((entry) => ({
-                    timestamp: entry.created_at,
-                    soundLevel: entry.field1, // Adjust field name based on your ThingSpeak setup
-                }));
-            } else {
-                throw new Error("Invalid response from ThingSpeak");
+    // Fetch from API URL
+    fetch(URL)
+        .then((response) => {
+            // Throw error if there's a problem with fetching the data
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        } catch (error) {
-            // Log the error and retry if needed
-            console.error(
-                `Error fetching ThingSpeak data (retry ${
-                    retries + 1
-                }/${maxRetries}):`,
-                error.message
-            );
 
-            // Increment the retry count
-            retries += 1;
-
-            // Wait for a short duration before retrying
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-    }
-
-    // If max retries reached without success, throw an error
-    throw new Error(
-        `Failed to fetch ThingSpeak data after ${maxRetries} retries`
-    );
+            // Return the fetched data if there's no problem
+            return response.json();
+        })
+        .catch((error) => console.error("Error fetching data:", error));
 };
 
-// Periodically fetch ThingSpeak data and calculate average sound level
-setInterval(fetchAndCalculateAverage, fetchRate);
+// Function to get latest dB value
+const getLatestValue = function () {
+    // Get data JSON (input=2 since we only want the latest value)
+    const dataJSON = getThingSpeakData(2);
+
+    // Get latest dB value from JSON
+    const latestdB = dataJSON.feeds[0].field1;
+
+    // Get timestamp from JSON
+    const latestTimestamp = dataJSON.feeds[0].created_at;
+
+    return [latestdB, latestTimestamp];
+};
+
+// Function to get 5 minute average dB value
+const getAverageValue = function () {
+    // Get data JSON (input=20 since that covers roughly 5 mins of data)
+    const dataJSON = getThingSpeakData(20);
+
+    // Calulate 5 min average data
+    const dbValues = dataJSON.feeds.map((feed) => parseFloat(feed.field1));
+    const avgValue =
+        dbValues.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue;
+        }, 0) / dbValues.length;
+
+    // Get current timestamp
+    const currentTimestamp = new Date().toISOString();
+
+    return [avgValue, currentTimestamp];
+};
 
 // Endpoint to fetch live dB level
-app.get("/live-db-level", async (req, res) => {
+app.get("/live-db-data", async (req, res) => {
     try {
-        // Fetch data from ThingSpeak (replace with your actual fetching logic)
-        const thingSpeakData = await fetchThingSpeakData();
+        // Get latest dB value
+        const lastestValueData = getLatestValue();
 
-        // Get the latest entry from ThingSpeak data
-        const latestEntry = thingSpeakData[0];
+        // Get 5 min average data
+        const averageData = getAverageValue();
 
-        // Extract sound level and timestamp from the latest entry
-        const liveDbLevelData = {
-            liveDbLevel: parseFloat(latestEntry.soundLevel), // Assuming soundLevel is a string, convert it to a number
-            timestamp: latestEntry.timestamp,
+        // JSON to send to client
+        const Data = {
+            latestValue: lastestValueData,
+            averageValue: averageData,
         };
 
-        // Send the live dB level and timestamp to the client
-        res.json(liveDbLevelData);
+        // Send the data JSON to client
+        res.json(Data);
     } catch (error) {
         console.error("Error fetching live dB level:", error);
         res.status(500).json({ error: "Internal Server Error" });

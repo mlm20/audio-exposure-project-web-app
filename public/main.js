@@ -1,16 +1,22 @@
 // #############################################################################
-// Init
+// Setu
 
 const testButton = document.getElementById("testButton");
 const notificationsSection = document.getElementById("notificationsSection");
 
-const updateFrequency = 10 * 1000;
+const liveDbLevel = document.getElementById("liveDbLevel");
+const liveDbTimestamp = document.getElementById("liveDbTimestamp");
+
+const avgDbLevel = document.getElementById("averageDbLevel");
+const averageDbTimestamp = document.getElementById("averageDbTimestamp");
+
+const updateFrequency = 30000; // in milliseconds
 
 // #############################################################################
 // Notifications
 
-// Function to dismiss a notification
-function dismissNotification(notification) {
+// Calls the dismiss-notification function on the backend
+const dismissNotification = function (notification) {
     fetch("/dismiss-notification", {
         method: "POST",
         headers: {
@@ -26,9 +32,9 @@ function dismissNotification(notification) {
         .catch((error) =>
             console.error("Error dismissing notification:", error)
         );
-}
+};
 
-// Function to update the notifications UI
+// Create UI elements for each notification in the JSON file
 const updateNotificationsUI = function (notifications) {
     notificationsSection.innerHTML = ""; // Clear existing content
 
@@ -78,7 +84,7 @@ const updateNotificationsUI = function (notifications) {
     });
 };
 
-// Function to fetch notifications and update UI
+// Function to fetch notifications and then update UI
 const fetchNotificationsAndUpdateUI = function () {
     fetch("/get-notifications")
         .then((response) => response.json())
@@ -114,58 +120,49 @@ fetchNotificationsAndUpdateUI();
 
 // Function to update live dB level UI
 const updateLiveDbLevelUI = (latestDbLevel, timestamp) => {
-    // Update the UI element with the latest dB level and timestamp
-    const liveDbLevelElement = document.getElementById("liveDbLevel");
-    liveDbLevelElement.textContent = `Latest dB Level: ${latestDbLevel.toFixed(
-        2
-    )}dB
-        (at ${timestamp})`;
+    liveDbLevel.textContent = `${latestDbLevel} dB`;
+    liveDbTimestamp.textContent = String(timestamp);
 };
 
 // Function to update average dB level UI
-const updateAverageDbLevelUI = (averageDbLevel) => {
-    // Update the UI element with the average dB level
-    const averageDbLevelElement = document.getElementById("averageDbLevel");
-    averageDbLevelElement.textContent = `Average dB Level (Last 5 Minutes): ${averageDbLevel.toFixed(
-        2
-    )}dB`;
+const updateAverageDbLevelUI = (averageDbLevel, timestamp) => {
+    avgDbLevel.textContent = `${averageDbLevel} dB`;
+    averageDbTimestamp.textContent = String(timestamp);
 };
 
-// Function to fetch live dB level from the server and update UI
-const fetchAndDisplayLiveDbLevel = async () => {
-    try {
-        const [latestDbLevel, averageDbLevel] =
-            await fetchLiveDbLevelFromServer();
+const fetchSoundLevelData = function () {
+    // Fetch from backend endpoint
+    fetch("/live-db-data")
+        .then((response) => {
+            // Throw error if there's a problem with fetching the data
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-        updateLiveDbLevelUI(latestDbLevel, new Date().toISOString());
-        updateAverageDbLevelUI(averageDbLevel);
-    } catch (error) {
-        console.error("Error fetching and displaying live dB level:", error);
-    }
+            // Return the fetched data if there's no problem
+            return response.json();
+        })
+        .catch((error) =>
+            console.error("Error fetching data from server:", error)
+        );
 };
 
-async function fetchLiveDbLevelFromServer() {
-    try {
-        const response = await fetch("/live-db-level");
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+// Container function to run fetch function and run UI update functions
+const fetchAndUpdateUI = function () {
+    // Fetch data
+    const responseJSON = fetchSoundLevelData();
 
-        const data = await response.json();
+    // Update live dB
+    updateLiveDbLevelUI(
+        String(responseJSON.latestValue[0]),
+        String(responseJSON.latestValue[1])
+    );
 
-        if (
-            data.liveDbLevel !== undefined &&
-            data.averageDbLevel !== undefined
-        ) {
-            return [data.liveDbLevel, data.averageDbLevel];
-        } else {
-            throw new Error("Invalid response from server");
-        }
-    } catch (error) {
-        console.error("Error fetching live dB level:", error);
-        throw error; // Rethrow the error to be caught by the calling function
-    }
-}
+    updateAverageDbLevelUI(
+        String(responseJSON.averageValue[0]),
+        String(responseJSON.averageValue[1])
+    );
+};
 
 // Schedule a function to fetch and display live dB level every 10 seconds
-setInterval(fetchAndDisplayLiveDbLevel, updateFrequency);
+setInterval(fetchAndUpdateUI, updateFrequency);
