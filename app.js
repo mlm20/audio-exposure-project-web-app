@@ -140,13 +140,47 @@ const fetchAndCalculateAverage = async () => {
 };
 
 // Function to fetch ThingSpeak data (replace with your actual logic)
+// Function to fetch ThingSpeak data (replace with your actual logic)
 const fetchThingSpeakData = async () => {
-    const response = await fetch(ThingSpeakAPIURL);
-    const data = await response.json();
-    return data.feeds.map((entry) => ({
-        timestamp: entry.created_at,
-        soundLevel: entry.field1, // Adjust field name based on your ThingSpeak setup
-    }));
+    // Retry configuration
+    const maxRetries = 3;
+    let retries = 0;
+
+    while (retries < maxRetries) {
+        try {
+            const response = await fetch(ThingSpeakAPIURL);
+            const data = await response.json();
+
+            // Check if the response contains valid data
+            if (data && data.feeds) {
+                return data.feeds.map((entry) => ({
+                    timestamp: entry.created_at,
+                    soundLevel: entry.field1, // Adjust field name based on your ThingSpeak setup
+                }));
+            } else {
+                throw new Error("Invalid response from ThingSpeak");
+            }
+        } catch (error) {
+            // Log the error and retry if needed
+            console.error(
+                `Error fetching ThingSpeak data (retry ${
+                    retries + 1
+                }/${maxRetries}):`,
+                error.message
+            );
+
+            // Increment the retry count
+            retries += 1;
+
+            // Wait for a short duration before retrying
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+    }
+
+    // If max retries reached without success, throw an error
+    throw new Error(
+        `Failed to fetch ThingSpeak data after ${maxRetries} retries`
+    );
 };
 
 // Periodically fetch ThingSpeak data and calculate average sound level
