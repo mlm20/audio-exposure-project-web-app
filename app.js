@@ -6,12 +6,13 @@ const fetch = require("isomorphic-fetch");
 const s3 = new AWS.S3();
 const bodyParser = require("body-parser");
 const socketIO = require("socket.io");
-const server = http.createServer(app);
-const io = socketIO(server);
 
 // Create app
 const app = express();
 app.use(bodyParser.json());
+
+const server = http.createServer(app);
+const io = socketIO(server);
 
 // AWS bucket name
 const bucketName = "cyclic-raspberry-quail-tutu-eu-west-2";
