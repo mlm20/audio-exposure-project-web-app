@@ -278,6 +278,7 @@ const getLatestValue = async function () {
     // Get data JSON (input=2 since we only want the latest value)
     const dataJSON = await getThingSpeakData(2);
 
+    console.log(dataJSON);
     // Get latest dB value from JSON
     const latestdB = dataJSON.feeds[0].field1;
 
@@ -293,7 +294,6 @@ const getAverageValue = async function () {
     const dataJSON = await getThingSpeakData(20);
 
     console.log(dataJSON);
-
     // Calulate 5 min average data
     const dbValues = dataJSON.feeds.map((feed) => parseFloat(feed.field1));
     const avgValue =
@@ -311,10 +311,10 @@ const getAverageValue = async function () {
 app.get("/live-db-data", async (req, res) => {
     try {
         // Get latest dB value
-        const lastestValueData = getLatestValue();
+        const lastestValueData = await getLatestValue();
 
         // Get 5 min average data
-        const averageData = getAverageValue();
+        const averageData = await getAverageValue();
 
         // JSON to send to client
         const Data = {
