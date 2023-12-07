@@ -261,17 +261,22 @@ const fetchAndCalculateAverage = async () => {
         // Fetch data from ThingSpeak (replace with your actual fetching logic)
         const thingSpeakData = await fetchThingSpeakData();
 
-        // Extract sound levels from the fetched data
-        const soundLevels = thingSpeakData.map((entry) => entry.soundLevel);
+        // Extract timestamp and sound level from the latest entry
+        const latestEntry = thingSpeakData[0];
+        const latestTimestamp = latestEntry.timestamp;
+        const latestSoundLevel = parseFloat(latestEntry.soundLevel);
 
-        // Add the latest sound level to the samples array
-        soundLevelSamples.push(...soundLevels);
+        // Add the latest timestamp and sound level to the samples array
+        soundLevelSamples.push({
+            timestamp: latestTimestamp,
+            soundLevel: latestSoundLevel,
+        });
 
         // Keep only samples from the last 2 minutes
         const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
-        soundLevelSamples = soundLevelSamples.filter(
-            (sample) => new Date(sample.timestamp) > twoMinutesAgo
-        );
+        soundLevelSamples = soundLevelSamples.filter((sample) => {
+            return new Date(sample.timestamp) > twoMinutesAgo;
+        });
 
         // Calculate average sound level
         const averageSoundLevel =
@@ -299,7 +304,7 @@ const fetchAndCalculateAverage = async () => {
 
         // Return both live and average dB levels
         return {
-            liveDbLevel: soundLevels[0], // Assuming the latest entry is the first in the array
+            liveDbLevel: latestSoundLevel, // Now using the extracted timestamp
             averageDbLevel: averageSoundLevel,
         };
     } catch (error) {
@@ -307,12 +312,11 @@ const fetchAndCalculateAverage = async () => {
             "Error fetching and calculating average sound level:",
             error
         );
-        throw error;
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
-// Function to fetch ThingSpeak data (replace with your actual logic)
-// Function to fetch ThingSpeak data (replace with your actual logic)
+// Function to fetch ThingSpeak data
 const fetchThingSpeakData = async () => {
     // Retry configuration
     const maxRetries = 3;
