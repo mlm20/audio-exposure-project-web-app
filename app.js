@@ -271,9 +271,9 @@ const getThingSpeakData = async (numSamples) => {
 };
 
 // Function to get latest dB value
-const getLatestValue = function () {
+const getLatestValue = async function () {
     // Get data JSON (input=2 since we only want the latest value)
-    const dataJSON = getThingSpeakData(2);
+    const dataJSON = await getThingSpeakData(2);
 
     // Get latest dB value from JSON
     const latestdB = dataJSON.feeds[0].field1;
@@ -285,9 +285,9 @@ const getLatestValue = function () {
 };
 
 // Function to get 5 minute average dB value
-const getAverageValue = function () {
+const getAverageValue = async function () {
     // Get data JSON (input=20 since that covers roughly 5 mins of data)
-    const dataJSON = getThingSpeakData(20);
+    const dataJSON = await getThingSpeakData(20);
 
     // Calulate 5 min average data
     const dbValues = dataJSON.feeds.map((feed) => parseFloat(feed.field1));

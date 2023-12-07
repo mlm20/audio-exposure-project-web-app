@@ -148,9 +148,9 @@ const fetchSoundLevelData = function () {
 };
 
 // Container function to run fetch function and run UI update functions
-const fetchAndUpdateUI = function () {
+const fetchAndUpdateUI = async function () {
     // Fetch data
-    const responseJSON = fetchSoundLevelData();
+    const responseJSON = await fetchSoundLevelData();
 
     // Update live dB
     updateLiveDbLevelUI(
