@@ -116,9 +116,16 @@ fetchNotificationsAndUpdateUI();
 const updateLiveDbLevelUI = (liveDbLevel) => {
     // Update the UI element with the live dB level
     const liveDbLevelElement = document.getElementById("liveDbLevel");
-    liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(
-        2
-    )}dB`;
+
+    // Check if liveDbLevel is a valid number
+    if (typeof liveDbLevel === "number" && !isNaN(liveDbLevel)) {
+        liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(
+            2
+        )}dB`;
+    } else {
+        // Handle the case where liveDbLevel is not a valid number
+        liveDbLevelElement.textContent = "Live dB Level: N/A";
+    }
 };
 
 // Function to fetch live dB level from the server and update UI
