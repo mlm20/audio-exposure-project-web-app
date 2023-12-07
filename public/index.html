@@ -54,14 +54,19 @@
                 <div id="notificationsSection"></div>
             </div>
 
-            <div id="liveDbLevel" class="dBIndicator">
-                <!-- Placeholder -->
-            </div>
+            <div class="primaryBox">
+                <h2>Live Sound Levels</h2>
 
-            <div id="averageDbLevel" class="dBIndicator">
-                <!-- Placeholder -->
-            </div>
+                <div id="dBIndicatorContainer">
+                    <div id="liveDbLevel" class="dBIndicator">
+                        <!-- Placeholder -->
+                    </div>
 
+                    <div id="averageDbLevel" class="dBIndicator">
+                        <!-- Placeholder -->
+                    </div>
+                </div>
+            </div>
 
             <div class="primaryBox" id="dBgraphContainer">
                 <h2>External Sound Levels</h2>
@@ -69,7 +74,7 @@
                     id="dBgraph"
                     width="450"
                     height="250"
-                    style="border: none;"
+                    style="border: none"
                     src="https://thingspeak.com/channels/2363431/charts/1?title=&xaxis=Time&color=06f&dynamic=true"
                 ></iframe>
             </div>

@@ -143,3 +143,8 @@ footer {
     width: fit-content;
     /* height: 250; */
 }
+
+#dBIndicatorContainer {
+    display: flex;
+    flex-direction: row;
+}

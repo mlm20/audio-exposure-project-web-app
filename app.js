@@ -258,7 +258,7 @@ app.post("/dismiss-notification", express.json(), async (req, res) => {
 // Function to fetch ThingSpeak data and calculate average sound level
 const fetchAndCalculateAverage = async () => {
     try {
-        // Fetch data from ThingSpeak (replace with your actual fetching logic)
+        // Fetch data from ThingSpeak
         const thingSpeakData = await fetchThingSpeakData();
 
         // Extract timestamp and sound level from the latest entry
@@ -272,23 +272,20 @@ const fetchAndCalculateAverage = async () => {
             soundLevel: latestSoundLevel,
         });
 
-        // Keep only samples from the last 2 minutes
-        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+        // Keep only samples from the last 5 minutes
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
         soundLevelSamples = soundLevelSamples.filter((sample) => {
-            return new Date(sample.timestamp) > twoMinutesAgo;
+            return new Date(sample.timestamp) > fiveMinutesAgo;
         });
 
         // Calculate average sound level
-        const averageSoundLevel =
-            soundLevelSamples.reduce((sum, sample) => sum + sample.level, 0) /
-            soundLevelSamples.length;
+        const sum = soundLevelSamples.reduce((acc, sample) => acc + sample.soundLevel, 0);
+        const averageSoundLevel = sum / soundLevelSamples.length;
 
         // If average level exceeds threshold, generate notification
         if (averageSoundLevel > dBthreshold) {
             const notification = {
-                message: `Audio threshold of ${dBthreshold}dB exceeded! Current level: ${averageSoundLevel.toFixed(
-                    2
-                )}dB`,
+                message: `Audio threshold of ${dBthreshold}dB exceeded! Current level: ${averageSoundLevel.toFixed(2)}dB`,
                 timestamp: new Date().toISOString(),
             };
 
@@ -304,15 +301,12 @@ const fetchAndCalculateAverage = async () => {
 
         // Return both live and average dB levels
         return {
-            liveDbLevel: latestSoundLevel, // Now using the extracted timestamp
+            liveDbLevel: latestSoundLevel,
             averageDbLevel: averageSoundLevel,
         };
     } catch (error) {
-        console.error(
-            "Error fetching and calculating average sound level:",
-            error
-        );
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error fetching and calculating average sound level:", error);
+        throw error; // Rethrow the error to be caught by the calling function
     }
 };
 

@@ -129,10 +129,14 @@ const updateAverageDbLevelUI = (averageDbLevel) => {
 
 // Function to fetch live dB level from the server and update UI
 const fetchAndDisplayLiveDbLevel = async () => {
-    const [latestDbLevel, averageDbLevel] = await fetchLiveDbLevelFromServer();
+    try {
+        const [latestDbLevel, averageDbLevel] = await fetchLiveDbLevelFromServer();
 
-    updateLiveDbLevelUI(latestDbLevel, new Date().toISOString());
-    updateAverageDbLevelUI(averageDbLevel);
+        updateLiveDbLevelUI(latestDbLevel, new Date().toISOString());
+        updateAverageDbLevelUI(averageDbLevel);
+    } catch (error) {
+        console.error("Error fetching and displaying live dB level:", error);
+    }
 };
 
 async function fetchLiveDbLevelFromServer() {
