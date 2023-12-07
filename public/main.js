@@ -140,9 +140,6 @@ const fetchSoundLevelData = async function () {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        // Debug statements
-        console.log(response.json());
-
         // Return the fetched data if there's no problem
         return response.json();
     } catch (error) {
@@ -155,6 +152,8 @@ const fetchAndUpdateUI = async function () {
     try {
         // Fetch data
         const responseJSON = await fetchSoundLevelData();
+
+        console.log(responseJSON);
 
         // Update live dB
         updateLiveDbLevelUI(

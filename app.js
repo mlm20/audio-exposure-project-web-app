@@ -320,9 +320,6 @@ app.get("/live-db-data", async (req, res) => {
             averageValue: averageData,
         };
 
-        // Debug statement
-        console.log(Data);
-
         // Send the data JSON to client
         res.json(Data);
     } catch (error) {
