@@ -110,6 +110,13 @@ fetchNotificationsAndUpdateUI();
 // #############################################################################
 // Live dB display
 
+// Function to update live dB level UI
+const updateLiveDbLevelUI = (liveDbLevel) => {
+    // Update the UI element with the live dB level
+    const liveDbLevelElement = document.getElementById("liveDbLevel");
+    liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(2)}dB`;
+};
+
 // Function to fetch live dB level from the server and update UI
 const fetchAndDisplayLiveDbLevel = () => {
     fetch("/live-db-level")
@@ -119,13 +126,6 @@ const fetchAndDisplayLiveDbLevel = () => {
             updateLiveDbLevelUI(data.liveDbLevel);
         })
         .catch((error) => console.error("Error fetching live dB level:", error));
-};
-
-// Function to update live dB level UI
-const updateLiveDbLevelUI = (liveDbLevel) => {
-    // Update the UI element with the live dB level
-    const liveDbLevelElement = document.getElementById("liveDbLevel");
-    liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(2)}dB`;
 };
 
 // Periodically fetch live dB level and update UI

@@ -13,8 +13,14 @@ app.use(bodyParser.json());
 const bucketName = "cyclic-raspberry-quail-tutu-eu-west-2";
 
 // ThingSpeak API URL
-const ThingSpeakAPIURL = "https://api.thingspeak.com/channels/2363431/feeds.json?results=2";
+const ThingSpeakAPIURL =
+    "https://api.thingspeak.com/channels/2363431/feeds.json?results=2";
 
+// dB threshold
+const dBthreshold = 40;
+
+// Frequency at which data is fetched from ThingSpeak
+const fetchRate = 10 * 1000;
 
 // Array to store recent sound level samples
 let soundLevelSamples = [];
@@ -108,9 +114,9 @@ const fetchAndCalculateAverage = async () => {
             soundLevelSamples.length;
 
         // If average level exceeds threshold, generate notification
-        if (averageSoundLevel > 80) {
+        if (averageSoundLevel > dBthreshold) {
             const notification = {
-                message: `Audio threshold of 80dB exceeded! Current level: ${averageSoundLevel.toFixed(
+                message: `Audio threshold of ${dBthreshold}dB exceeded! Current level: ${averageSoundLevel.toFixed(
                     2
                 )}dB`,
                 timestamp: new Date().toISOString(),
@@ -144,7 +150,7 @@ const fetchThingSpeakData = async () => {
 };
 
 // Periodically fetch ThingSpeak data and calculate average sound level
-setInterval(fetchAndCalculateAverage, 5 * 1000); // Adjust the interval based on your data sampling frequency
+setInterval(fetchAndCalculateAverage, fetchRate);
 
 // Retrieve JSON notifications from S3
 app.get("/get-notifications", async (req, res) => {
@@ -299,6 +305,23 @@ app.post("/dismiss-notification", express.json(), async (req, res) => {
         res.json({ success: true, message: "Notification dismissed" });
     } catch (error) {
         console.error("Error dismissing notification:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// Endpoint to fetch live dB level
+app.get("/live-db-level", async (req, res) => {
+    try {
+        // Fetch data from ThingSpeak (replace with your actual fetching logic)
+        const thingSpeakData = await fetchThingSpeakData();
+
+        // Extract the latest sound level
+        const latestSoundLevel =
+            thingSpeakData.length > 0 ? thingSpeakData[0].soundLevel : 0;
+
+        res.json({ liveDbLevel: latestSoundLevel });
+    } catch (error) {
+        console.error("Error fetching live dB level:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
