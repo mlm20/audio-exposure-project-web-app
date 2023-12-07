@@ -256,18 +256,21 @@ const getThingSpeakData = async (numSamples) => {
     // Function inputs determines the number of data samples fetched
     const URL = String(ThingSpeakAPIURL + numSamples);
 
-    // Fetch from API URL
-    fetch(URL)
-        .then((response) => {
-            // Throw error if there's a problem with fetching the data
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+    try {
+        // Fetch from API URL
+        const response = await fetch(URL);
 
-            // Return the fetched data if there's no problem
-            return response.json();
-        })
-        .catch((error) => console.error("Error fetching data:", error));
+        // Throw error if there's a problem with fetching the data
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Return the fetched data if there's no problem
+        return response.json();
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        throw error;
+    }
 };
 
 // Function to get latest dB value
