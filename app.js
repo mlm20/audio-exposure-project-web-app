@@ -292,6 +292,8 @@ const getAverageValue = async function () {
     // Get data JSON (input=20 since that covers roughly 5 mins of data)
     const dataJSON = await getThingSpeakData(20);
 
+    console.log(dataJSON);
+
     // Calulate 5 min average data
     const dbValues = dataJSON.feeds.map((feed) => parseFloat(feed.field1));
     const avgValue =
