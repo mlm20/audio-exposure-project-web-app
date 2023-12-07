@@ -140,6 +140,9 @@ const fetchSoundLevelData = async function () {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
+        // Debug statements
+        console.log(response);
+
         // Return the fetched data if there's no problem
         return response.json();
     } catch (error) {
@@ -167,6 +170,9 @@ const fetchAndUpdateUI = async function () {
         console.error("Error updating UI:", error);
     }
 };
+
+// Initial fetch and update UI when page loads
+fetchAndUpdateUI();
 
 // Schedule a function to fetch and display live dB level every 10 seconds
 setInterval(fetchAndUpdateUI, updateFrequency);
