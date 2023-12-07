@@ -133,6 +133,7 @@ const fetchAndDisplayLiveDbLevel = () => {
     fetch("/live-db-level")
         .then((response) => response.json())
         .then((data) => {
+            console.log(data);
             // Update the UI with the live dB level
             updateLiveDbLevelUI(data.liveDbLevel);
         })
