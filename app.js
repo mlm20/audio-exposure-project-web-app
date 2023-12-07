@@ -1,7 +1,7 @@
 // Imports
 const express = require("express");
 const AWS = require("aws-sdk");
-const fetch = require("node-fetch").default;
+const fetch = require("isomorphic-fetch");
 const s3 = new AWS.S3();
 const bodyParser = require("body-parser");
 
