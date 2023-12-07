@@ -10,7 +10,7 @@ const liveDbTimestamp = document.getElementById("liveDbTimestamp");
 const avgDbLevel = document.getElementById("averageDbLevel");
 const averageDbTimestamp = document.getElementById("averageDbTimestamp");
 
-const updateFrequency = 30000; // in milliseconds
+const updateFrequency = 10 * 60 * 1000; // in milliseconds
 
 // #############################################################################
 // General helper functions
