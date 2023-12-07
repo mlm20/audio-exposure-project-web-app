@@ -4,6 +4,8 @@
 const testButton = document.getElementById("testButton");
 const notificationsSection = document.getElementById("notificationsSection");
 
+const updateFrequency = 10 * 1000;
+
 // #############################################################################
 // Notifications
 
@@ -114,7 +116,9 @@ fetchNotificationsAndUpdateUI();
 const updateLiveDbLevelUI = (liveDbLevel) => {
     // Update the UI element with the live dB level
     const liveDbLevelElement = document.getElementById("liveDbLevel");
-    liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(2)}dB`;
+    liveDbLevelElement.textContent = `Live dB Level: ${liveDbLevel.toFixed(
+        2
+    )}dB`;
 };
 
 // Function to fetch live dB level from the server and update UI
@@ -125,8 +129,10 @@ const fetchAndDisplayLiveDbLevel = () => {
             // Update the UI with the live dB level
             updateLiveDbLevelUI(data.liveDbLevel);
         })
-        .catch((error) => console.error("Error fetching live dB level:", error));
+        .catch((error) =>
+            console.error("Error fetching live dB level:", error)
+        );
 };
 
 // Periodically fetch live dB level and update UI
-setInterval(fetchAndDisplayLiveDbLevel, 5 * 1000); // Adjust the interval based on your data sampling frequency
+setInterval(fetchAndDisplayLiveDbLevel, updateFrequency); // Adjust the interval based on your data sampling frequency
