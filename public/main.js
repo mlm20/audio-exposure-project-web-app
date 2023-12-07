@@ -13,6 +13,25 @@ const averageDbTimestamp = document.getElementById("averageDbTimestamp");
 const updateFrequency = 30000; // in milliseconds
 
 // #############################################################################
+// General helper functions
+
+// Reformat timestamp from ISO to en-GB format
+const formatTimestampToGB = function (timestamp) {
+    const date = new Date(timestamp);
+    const options = {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false, // Use 24-hour format
+    };
+
+    return new Intl.DateTimeFormat("en-GB", options).format(date);
+};
+
+// #############################################################################
 // Notifications
 
 // Calls the dismiss-notification function on the backend
@@ -121,13 +140,13 @@ fetchNotificationsAndUpdateUI();
 // Function to update live dB level UI
 const updateLiveDbLevelUI = (latestDbLevel, timestamp) => {
     liveDbLevel.textContent = `${latestDbLevel} dB`;
-    liveDbTimestamp.textContent = String(timestamp);
+    liveDbTimestamp.textContent = formatTimestampToGB(timestamp);
 };
 
 // Function to update average dB level UI
 const updateAverageDbLevelUI = (averageDbLevel, timestamp) => {
     avgDbLevel.textContent = `${averageDbLevel} dB`;
-    averageDbTimestamp.textContent = String(timestamp);
+    averageDbTimestamp.textContent = formatTimestampToGB(timestamp);
 };
 
 const fetchSoundLevelData = async function () {
