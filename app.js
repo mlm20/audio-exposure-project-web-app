@@ -349,11 +349,17 @@ app.get("/live-db-level", async (req, res) => {
         // Fetch data from ThingSpeak (replace with your actual fetching logic)
         const thingSpeakData = await fetchThingSpeakData();
 
-        // Extract the latest sound level
-        const latestSoundLevel =
-            thingSpeakData.length > 0 ? thingSpeakData[0].soundLevel : 0;
+        // Get the latest entry from ThingSpeak data
+        const latestEntry = thingSpeakData[0];
 
-        res.json({ liveDbLevel: latestSoundLevel });
+        // Extract sound level and timestamp from the latest entry
+        const liveDbLevelData = {
+            liveDbLevel: parseFloat(latestEntry.soundLevel), // Assuming soundLevel is a string, convert it to a number
+            timestamp: latestEntry.timestamp,
+        };
+
+        // Send the live dB level and timestamp to the client
+        res.json(liveDbLevelData);
     } catch (error) {
         console.error("Error fetching live dB level:", error);
         res.status(500).json({ error: "Internal Server Error" });
