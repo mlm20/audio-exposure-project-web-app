@@ -274,26 +274,28 @@ const getThingSpeakData = async (numSamples) => {
 };
 
 // Function to get latest dB value
-const getLatestValue = async function () {
+const getLatestValue = function (data) {
     // Get data JSON (input=2 since we only want the latest value)
-    const dataJSON = await getThingSpeakData(2);
+    const dataJSON = data;
 
     // Get latest dB value from JSON
-    const latestdB = dataJSON.feeds[0].field1;
+    const latestdB = dataJSON.feeds[dataJSON.feeds.length - 1].field1;
 
     // Get timestamp from JSON
-    const latestTimestamp = dataJSON.feeds[0].created_at;
+    const latestTimestamp = dataJSON.feeds[dataJSON.feeds.length - 1].created_at;
 
     return [latestdB, latestTimestamp];
 };
 
 // Function to get 5 minute average dB value
-const getAverageValue = async function () {
-    // Get data JSON (input=20 since that covers roughly 5 mins of data)
-    const dataJSON = await getThingSpeakData(20);
+const getAverageValue = function (data) {
+    // Get data JSON
+    const dataJSON = data;
+
+    // Get last 20 samples (roughly last 5 mins)
+    const dbValues = dataJSON.feeds.slice(-20).map(entry => parseFloat(entry.field1));
 
     // Calulate 5 min average data
-    const dbValues = dataJSON.feeds.map((feed) => parseFloat(feed.field1));
     const avgValue =
         dbValues.reduce((accumulator, currentValue) => {
             return accumulator + currentValue;
@@ -308,11 +310,14 @@ const getAverageValue = async function () {
 // Endpoint to fetch live dB level
 app.get("/live-db-data", async (req, res) => {
     try {
+        // Fetch data from server ((input=100 since that covers roughly the last few hours))
+        const dataJSON = await (getThingSpeakData(2000));
+
         // Get latest dB value
-        const lastestValueData = await getLatestValue();
+        const lastestValueData = getLatestValue(dataJSON);
 
         // Get 5 min average data
-        const averageData = await getAverageValue();
+        const averageData = getAverageValue(dataJSON);
 
         // JSON to send to client
         const Data = {
