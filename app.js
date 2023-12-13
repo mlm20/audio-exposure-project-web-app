@@ -341,23 +341,39 @@ const calculateNoiseDose = function (averageDecibel, exposureTime) {
 
 // Endpoint for noise dose submissions
 app.post("/submit-noise-dose", express.json(), async (req, res) => {
-    const { averageDecibel, exposureTime } = req.body;
+    try {
+        const { averageDecibel, exposureTime } = req.body;
 
-    // Calculate noise dose
-    const noiseDose = calculateNoiseDose(averageDecibel, exposureTime);
+        // Check if input values are valid numbers
+        if (
+            isNaN(parseFloat(averageDecibel)) ||
+            isNaN(parseFloat(exposureTime))
+        ) {
+            throw new Error("Invalid input values");
+        }
 
-    // Create notification
-    const notification = {
-        message: `Noise Dose is ${noiseDose}%\nTake necessary precautions!`,
-        timestamp: new Date().toLocaleString("en-GB", { timeZone: "UTC" }),
-    };
+        // Calculate noise dose
+        const noiseDose = calculateNoiseDose(
+            parseFloat(averageDecibel),
+            parseFloat(exposureTime)
+        );
 
-    // Save the notification to S3
-    await saveNotification(notification);
-    console.log("Notification triggered:", notification);
+        // Create notification
+        const notification = {
+            message: `Noise Dose is ${noiseDose}%\nTake necessary precautions!`,
+            timestamp: new Date().toLocaleString("en-GB", { timeZone: "UTC" }),
+        };
 
-    // Send a response to the client
-    res.json({ success: true, message: "Noise dose submitted" });
+        // Save the notification to S3
+        await saveNotification(notification);
+        console.log("Notification triggered:", notification);
+
+        // Send a response to the client
+        res.json({ success: true, message: "Noise dose submitted" });
+    } catch (error) {
+        console.error("Error submitting noise dose:", error);
+        res.status(400).json({ success: false, error: error.message });
+    }
 });
 
 // #############################################################################

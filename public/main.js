@@ -233,6 +233,7 @@ const drawGraph = function (dbValues, timestamps) {
         window.myLineChart.options = options;
         window.myLineChart.update();
     } else {
+        // eslint-disable-next-line no-undef
         window.myLineChart = new Chart(ctx, config);
     }
 };
@@ -279,6 +280,65 @@ const fetchNotificationsAndUpdateUI = function () {
             console.error("Error fetching notifications:", error)
         );
 };
+
+// #############################################################################
+// Noise dose
+
+// Function to fetch and submit noise dose form data
+const submitNoiseDoseForm = async function () {
+    try {
+        // Get form input values
+        const averageDecibelInput = document.getElementById("averageDecibel");
+        const exposureTimeInput = document.getElementById("exposureTime");
+
+        // Validate input values
+        if (
+            isNaN(parseFloat(averageDecibelInput.value)) ||
+            isNaN(parseFloat(exposureTimeInput.value))
+        ) {
+            throw new Error("Invalid input values");
+        }
+
+        // Fetch data from the server
+        const response = await fetch("/submit-noise-dose", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                averageDecibel: parseFloat(averageDecibelInput.value),
+                exposureTime: parseFloat(exposureTimeInput.value),
+            }),
+        });
+
+        // Throw error if the response is not successful
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Parse the response
+        const responseData = await response.json();
+
+        // Handle the response (if needed)
+        console.log(responseData);
+
+        // Update notifications after form submission
+        fetchNotificationsAndUpdateUI();
+    } catch (error) {
+        console.error("Error submitting form:", error);
+    }
+};
+
+// Add event listener for form submission
+document
+    .getElementById("formButton")
+    .addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+        submitNoiseDoseForm();
+    });
+
+// #############################################################################
+// Initialise UI
 
 // Initial fetch and update when the page loads
 fetchNotificationsAndUpdateUI();
