@@ -332,11 +332,18 @@ const referenceDB = 85;
 
 // Helper function to calculate noise dose
 const calculateNoiseDose = function (averageDecibel, exposureTime) {
-    // Formula from online source
-    const noiseDose =
-        (100 * exposureTime * Math.pow((averageDecibel - referenceDB) / 10)) /
-        referenceTime;
-    return noiseDose;
+    try {
+        // Formula from online source
+        const noiseDose =
+            (100 *
+                exposureTime *
+                Math.pow((averageDecibel - referenceDB) / 10)) /
+            referenceTime;
+        return noiseDose;
+    } catch (error) {
+        console.error("Error in noise dose calculation:", error);
+        return NaN;
+    }
 };
 
 // Endpoint for noise dose submissions
