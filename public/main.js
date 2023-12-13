@@ -211,10 +211,6 @@ const drawGraph = function (dbValues, timestamps) {
                     display: true,
                     labelString: "Sound Level (dB)",
                 },
-                title: {
-                    text: "Sound Level (dB)",
-                    align: "center",
-                }
             },
         },
         plugins: {

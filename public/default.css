@@ -58,6 +58,10 @@ footer {
     text-align: center;
 }
 
+canvas {
+    background-color: inherit;
+}
+
 /* Custom classes */
 
 .primaryBox {
