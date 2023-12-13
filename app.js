@@ -370,16 +370,16 @@ app.post("/submit-noise-dose", express.json(), async (req, res) => {
         let notification;
         if (noiseDose > 100) {
             notification = {
-                message: `Noise Dose is ${noiseDose.toFixed(1)}%
-                \\nYou have exceeded safe sound levels`,
+                message: `Noise Dose is ${noiseDose.toFixed(1)}%\n\
+                You have exceeded safe sound levels`,
                 timestamp: new Date().toLocaleString("en-GB", {
                     timeZone: "UTC",
                 }),
             };
         } else {
             notification = {
-                message: `Noise Dose is ${noiseDose.toFixed(1)}%
-                \\nYou are within safe levels`,
+                message: `Noise Dose is ${noiseDose.toFixed(1)}%\n\
+                You are within safe levels`,
                 timestamp: new Date().toLocaleString("en-GB", {
                     timeZone: "UTC",
                 }),
