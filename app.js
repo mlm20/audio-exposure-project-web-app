@@ -326,7 +326,7 @@ const getDataForGraph = function (data) {
 app.get("/live-db-data", async (req, res) => {
     try {
         // Fetch data from server ((input=100 since that covers roughly the last few hours))
-        const dataJSON = await getThingSpeakData(2000);
+        const dataJSON = await getThingSpeakData(100);
 
         // Get latest dB value
         const lastestValueData = getLatestValue(dataJSON);

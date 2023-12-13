@@ -177,8 +177,8 @@ const drawGraph = function (dbValues, timestamps) {
                 {
                     type: "time",
                     time: {
-                        unit: "hour",
-                        tooltipFormat: "HH:mm:ss",
+                        unit: "minute",
+                        tooltipFormat: "HH:mm",
                     },
                     scaleLabel: {
                         display: true,

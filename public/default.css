@@ -149,9 +149,8 @@ footer {
     gap: 10px;
 }
 
-#dBgraphContainer {
-    width: fit-content;
-    /* height: 250; */
+#dbGraph {
+    width: 100%;
 }
 
 #dBIndicatorContainer {
