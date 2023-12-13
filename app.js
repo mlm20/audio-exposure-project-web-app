@@ -342,7 +342,7 @@ const calculateNoiseDose = function (averageDecibel, exposureTime) {
 // Endpoint for noise dose submissions
 app.post("/submit-noise-dose", express.json(), async (req, res) => {
     try {
-        const { averageDecibel, exposureTime } = req.body;
+        const [averageDecibel, exposureTime] = req.body;
 
         // Check if input values are valid numbers
         if (

@@ -87,19 +87,27 @@
 
             <div class="primaryBox" id="noiseDoseContainer">
                 <h2>Noise Dose Calculator</h2>
-                <form action="/submit-noise-dose" method="post">
-                    <div class="inputContainer">
-                        <label for="averageDecibel">Average dB Level</label>
-                        <input type="number" id="averageDecibel" name="averageDecibel" required>
-                    </div>
-    
-                    <div class="inputContainer">
-                        <label for="exposureTime">Exposure time (minutes)</label>
-                        <input type="number" id="exposureTime" name="exposureTime" required>
-                    </div>
+                <div class="inputContainer">
+                    <label for="averageDecibel">Average dB Level</label>
+                    <input
+                        type="number"
+                        id="averageDecibel"
+                        name="averageDecibel"
+                        required
+                    />
+                </div>
 
-                    <button type="submit" id="formButton">Calculate</button>
-                </form>
+                <div class="inputContainer">
+                    <label for="exposureTime">Exposure time (minutes)</label>
+                    <input
+                        type="number"
+                        id="exposureTime"
+                        name="exposureTime"
+                        required
+                    />
+                </div>
+
+                <button type="button" id="formButton">Calculate</button>
             </div>
         </main>
 
