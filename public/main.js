@@ -156,9 +156,12 @@ const drawGraph = function (dbValues, timestamps) {
     // Get graph element
     const ctx = document.getElementById("dbGraph").getContext("2d");
 
+    // Format timestamps as "HH:mm"
+    const formattedTimestamps = timestamps.map((timestamp) => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric', hour12: false }).format(new Date(timestamp)));
+
     // Data object, needed for chart.js
     const data = {
-        labels: timestamps.map((timestamp) => moment(timestamp).format("HH:mm")), // Format timestamps as "HH:mm"
+        labels: formattedTimestamps,
         datasets: [
             {
                 label: "Sound Level (dB)",
