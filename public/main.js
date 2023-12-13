@@ -336,8 +336,7 @@ const submitNoiseDoseForm = async function () {
 // Add event listener for form submission
 document
     .getElementById("formButton")
-    .addEventListener("click", function (event) {
-        event.preventDefault(); // Prevent the default form submission behavior
+    .addEventListener("click", function () {
         submitNoiseDoseForm();
     });
 
