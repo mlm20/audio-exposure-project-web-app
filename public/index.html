@@ -12,6 +12,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
 
     <!-- Document Start -->
@@ -80,16 +81,10 @@
                 </div>
             </div>
 
-            <!-- <div class="primaryBox" id="dBgraphContainer">
-                <h2>External Sound Levels</h2>
-                <iframe
-                    id="dBgraph"
-                    width="450"
-                    height="250"
-                    style="border: none"
-                    src="https://thingspeak.com/channels/2363431/charts/1?title=&xaxis=Time&color=06f&dynamic=true"
-                ></iframe>
-            </div> -->
+            <div class="primaryBox" id="dBgraphContainer">
+                <h2>dB Graph</h2>
+                <canvas id="dbGraph"></canvas>
+            </div>
         </main>
 
         <footer>

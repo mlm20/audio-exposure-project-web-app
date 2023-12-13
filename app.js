@@ -282,7 +282,8 @@ const getLatestValue = function (data) {
     const latestdB = dataJSON.feeds[dataJSON.feeds.length - 1].field1;
 
     // Get timestamp from JSON
-    const latestTimestamp = dataJSON.feeds[dataJSON.feeds.length - 1].created_at;
+    const latestTimestamp =
+        dataJSON.feeds[dataJSON.feeds.length - 1].created_at;
 
     return [latestdB, latestTimestamp];
 };
@@ -293,7 +294,9 @@ const getAverageValue = function (data) {
     const dataJSON = data;
 
     // Get last 20 samples (roughly last 5 mins)
-    const dbValues = dataJSON.feeds.slice(-20).map(entry => parseFloat(entry.field1));
+    const dbValues = dataJSON.feeds
+        .slice(-20)
+        .map((entry) => parseFloat(entry.field1));
 
     // Calulate 5 min average data
     const avgValue =
@@ -307,11 +310,23 @@ const getAverageValue = function (data) {
     return [avgValue, currentTimestamp];
 };
 
+// Function to collect dB data for graph
+const getDataForGraph = function (data) {
+    // Get data JSON
+    const dataJSON = data;
+
+    // Extract dbValues and timestamps
+    const dbValues = dataJSON.feeds.map(entry => entry.field1);
+    const timestamps = dataJSON.feeds.map(entry => entry.created_at);
+
+    return [dbValues, timestamps];
+};
+
 // Endpoint to fetch live dB level
 app.get("/live-db-data", async (req, res) => {
     try {
         // Fetch data from server ((input=100 since that covers roughly the last few hours))
-        const dataJSON = await (getThingSpeakData(2000));
+        const dataJSON = await getThingSpeakData(2000);
 
         // Get latest dB value
         const lastestValueData = getLatestValue(dataJSON);
@@ -319,10 +334,14 @@ app.get("/live-db-data", async (req, res) => {
         // Get 5 min average data
         const averageData = getAverageValue(dataJSON);
 
+        // Get data for graph
+        const dataForGraph = getDataForGraph(dataJSON);
+
         // JSON to send to client
         const Data = {
             latestValue: lastestValueData,
             averageValue: averageData,
+            graphData: dataForGraph
         };
 
         // Send the data JSON to client

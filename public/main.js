@@ -10,8 +10,6 @@ const liveDbTimestamp = document.getElementById("liveDbTimestamp");
 const avgDbLevel = document.getElementById("averageDbLevel");
 const averageDbTimestamp = document.getElementById("averageDbTimestamp");
 
-const updateFrequency = 10 * 60 * 1000; // in milliseconds
-
 // #############################################################################
 // General helper functions
 
@@ -103,19 +101,6 @@ const updateNotificationsUI = function (notifications) {
     });
 };
 
-// Function to fetch notifications and then update UI
-const fetchNotificationsAndUpdateUI = function () {
-    fetch("/get-notifications")
-        .then((response) => response.json())
-        .then((notifications) => {
-            // Update the UI with the notifications
-            updateNotificationsUI(notifications);
-        })
-        .catch((error) =>
-            console.error("Error fetching notifications:", error)
-        );
-};
-
 // Notification test button
 testButton.addEventListener("click", function () {
     // Make an HTTP request to trigger the event
@@ -131,20 +116,17 @@ testButton.addEventListener("click", function () {
         .catch((error) => console.error("Error triggering event:", error));
 });
 
-// Initial fetch and update when the page loads
-fetchNotificationsAndUpdateUI();
-
 // #############################################################################
 // Live dB display
 
 // Function to update live dB level UI
-const updateLiveDbLevelUI = (latestDbLevel, timestamp) => {
+const updateLiveDbLevelUI = function (latestDbLevel, timestamp) {
     liveDbLevel.textContent = `${latestDbLevel} dB`;
     liveDbTimestamp.textContent = formatTimestampToGB(timestamp);
 };
 
 // Function to update average dB level UI
-const updateAverageDbLevelUI = (averageDbLevel, timestamp) => {
+const updateAverageDbLevelUI = function (averageDbLevel, timestamp) {
     avgDbLevel.textContent = `${averageDbLevel} dB`;
     averageDbTimestamp.textContent = formatTimestampToGB(timestamp);
 };
@@ -166,7 +148,74 @@ const fetchSoundLevelData = async function () {
     }
 };
 
-// Container function to run fetch function and run UI update functions
+// #############################################################################
+// dB graph
+
+// Function to make graph
+const drawGraph = function (dbValues, timestamps) {
+    // Get graph element
+    const ctx = document.getElementById("dbGraph").getContext("2d");
+
+    // Data object, needed for chart.js
+    const data = {
+        labels: timestamps,
+        datasets: [
+            {
+                label: "Sound Level (dB)",
+                data: dbValues,
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                lineTension: 0.1,
+            },
+        ],
+    };
+
+    // Set graph options
+    const options = {
+        scales: {
+            x: [
+                {
+                    type: "time",
+                    time: {
+                        unit: "hour",
+                        tooltipFormat: "HH:mm:ss",
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Timestamp",
+                    },
+                },
+            ],
+            y: {
+                scaleLabel: {
+                    display: true,
+                    labelString: "Sound Level (dB)",
+                },
+            },
+        },
+    };
+
+    // Set graph configuration
+    const config = {
+        type: "line",
+        data: data,
+        options: options,
+    };
+
+    // Create or update graph
+    if (window.myLineChart) {
+        window.myLineChart.data = data;
+        window.myLineChart.options = options;
+        window.myLineChart.update();
+    } else {
+        window.myLineChart = new Chart(ctx, config);
+    }
+};
+
+// #############################################################################
+// Update UI
+
+// Fetch ThingSpeak data & run UI update functions
 const fetchAndUpdateUI = async function () {
     try {
         // Fetch data
@@ -180,17 +229,34 @@ const fetchAndUpdateUI = async function () {
             String(responseJSON.latestValue[1])
         );
 
+        // Update average dB
         updateAverageDbLevelUI(
             String(responseJSON.averageValue[0]),
             String(responseJSON.averageValue[1])
         );
+
+        // Draw graph
+        drawGraph(responseJSON.graphData[0], responseJSON.graphData[1]);
     } catch (error) {
         console.error("Error updating UI:", error);
     }
 };
 
-// Initial fetch and update UI when page loads
-fetchAndUpdateUI();
+// Fetch notifications and & run UI update functions
+const fetchNotificationsAndUpdateUI = function () {
+    fetch("/get-notifications")
+        .then((response) => response.json())
+        .then((notifications) => {
+            // Update the UI with the notifications
+            updateNotificationsUI(notifications);
+        })
+        .catch((error) =>
+            console.error("Error fetching notifications:", error)
+        );
+};
 
-// Schedule a function to fetch and display live dB level every 10 seconds
-setInterval(fetchAndUpdateUI, updateFrequency);
+// Initial fetch and update when the page loads
+fetchNotificationsAndUpdateUI();
+
+// Fetch and update UI when page loads
+fetchAndUpdateUI();
