@@ -26,21 +26,40 @@
                     <h2>About</h2>
                 </div>
                 <p>
-                    This IoT-based project aims to help users monitor the sound
-                    levels they are exposed to and identify when these are too
-                    high.
+                    This IoT-based project aims to help users monitor their
+                    sound levels so they can identify when these are too high.
                 </p>
 
                 <p>
                     This consists of an esp-32 based decibel sensor, which
                     measures sound levels in the user's environment, and a
-                    digital system which measures the sound levels users are
-                    exposed to via their headphones.
+                    digital system which calculated and tracks the "noise dose"
+                    users are exposed to via music from headphones.
                 </p>
 
                 <p>
-                    The user is notified on this app if they exceed the
-                    recommended sound exposure.
+                    The user is notified on this app if their sound levels (5
+                    minute average) exceed 70 dB. Although not medically
+                    dangerous, this volume can be disturbing to flatmates and
+                    neighbours. Users can take action when this gets too loud.
+                </p>
+
+                <p>
+                    The user is also notified of the
+                    <a
+                        href="https://www.larsondavis.com/learn/industrial-hygiene/noise-dosimetry-terminology"
+                        >Noise Dose</a
+                    >
+                    they are exposed to. This measured as a percentage, where
+                    values under 100% mean they are under the safe limit. The
+                    information needed for this (Average dB Level and Exposure
+                    time) is collected and available by default from certain
+                    smartphones. On iPhone, this is via the <em>Health</em> app.
+                </p>
+
+                <p>
+                    Notifications are persistent, thus users can look at their
+                    exposure over time.
                 </p>
             </div>
 
@@ -60,22 +79,14 @@
                 <div id="dBIndicatorContainer">
                     <div class="inddBContainer">
                         <h3>Current Sound Level</h3>
-                        <div id="liveDbLevel" class="dBIndicator">
-                            <!-- Placeholder -->
-                        </div>
-                        <div id="liveDbTimestamp" class="dBTimestamp">
-                            <!-- Timestamp -->
-                        </div>
+                        <div id="liveDbLevel" class="dBIndicator"></div>
+                        <div id="liveDbTimestamp" class="dBTimestamp"></div>
                     </div>
 
                     <div class="inddBContainer">
                         <h3>Average Sound Level (Past 5 Minutes)</h3>
-                        <div id="averageDbLevel" class="dBIndicator">
-                            <!-- Placeholder -->
-                        </div>
-                        <div id="averageDbTimestamp" class="dBTimestamp">
-                            <!-- Timestamp -->
-                        </div>
+                        <div id="averageDbLevel" class="dBIndicator"></div>
+                        <div id="averageDbTimestamp" class="dBTimestamp"></div>
                     </div>
                 </div>
             </div>
@@ -93,16 +104,18 @@
                         type="number"
                         id="averageDecibel"
                         name="averageDecibel"
+                        class="doseInput"
                         required
                     />
                 </div>
 
                 <div class="inputContainer">
-                    <label for="exposureTime">Exposure time (minutes)</label>
+                    <label for="exposureTime">Exposure time (hours)</label>
                     <input
                         type="number"
                         id="exposureTime"
                         name="exposureTime"
+                        class="doseInput"
                         required
                     />
                 </div>

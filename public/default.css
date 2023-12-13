@@ -38,7 +38,8 @@ p {
 }
 
 a {
-    background-color: white;
+    background-color: inherit;
+    color: rgb(75, 192, 192);
 }
 
 main {
@@ -66,6 +67,14 @@ canvas {
 
 button {
     cursor: pointer;
+}
+
+label {
+    background-color: inherit;
+}
+
+input {
+    background-color: inherit;
 }
 
 /* Custom classes */
@@ -155,12 +164,39 @@ button {
     font-size: smaller;
 }
 
+.inputContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.doseInput {
+    width: 50px;
+    height: 30px;
+    outline: rgb(75, 192, 192) 1.5px solid;
+}
+
+.doseInput:focus {
+    outline: rgb(75, 192, 192) 3px solid;
+}
+
 /* IDs */
 
 #notificationsSection {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+#testButton {
+    background-color: rgb(75, 192, 192);
+    border: none;
+    width: 100%;
+    height: 30px;
+    color: white;
+    font-weight: bolder;
+    border-radius: 3px;
 }
 
 #dbGraph {
@@ -173,4 +209,14 @@ button {
 
 #soundLevelBox {
     gap: 0px;
+}
+
+#formButton {
+    background-color: rgb(75, 192, 192);
+    border: none;
+    width: 100%;
+    height: 30px;
+    color: white;
+    font-weight: bolder;
+    border-radius: 3px;
 }
