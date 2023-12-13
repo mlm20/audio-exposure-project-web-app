@@ -12,15 +12,6 @@ app.use(bodyParser.json());
 // AWS bucket name
 const bucketName = "cyclic-raspberry-quail-tutu-eu-west-2";
 
-// dB threshold
-const dBthreshold = 80;
-
-// Frequency at which data is fetched from ThingSpeak
-const fetchRate = 10 * 1000;
-
-// Array to store recent sound level samples
-let soundLevelSamples = [];
-
 // #############################################################################
 // Logs all request paths and method
 app.use(function (req, res, next) {
@@ -86,7 +77,7 @@ const initializeNotificationsFile = async function () {
 };
 initializeNotificationsFile();
 
-// Retrieve JSON notifications from S3
+// Endpoint to retrieve JSON notifications from S3
 app.get("/get-notifications", async (req, res) => {
     const filename = "notifications.json";
 
@@ -110,23 +101,26 @@ app.get("/get-notifications", async (req, res) => {
     }
 });
 
-// Save JSON notifications to S3
-app.post("/save-notification", async (req, res) => {
+// Helper function to save a notification to S3
+const saveNotification = async function (notification) {
     const filename = "notifications.json";
 
     try {
-        const existingNotifications = await s3
+        // Fetch existing notifications from S3
+        const s3File = await s3
             .getObject({
                 Bucket: bucketName,
                 Key: filename,
             })
             .promise();
 
-        const notifications = JSON.parse(existingNotifications.Body.toString());
+        // Parse existing notifications
+        const notifications = JSON.parse(s3File.Body.toString());
 
-        // Assuming req.body is a valid notification object
-        notifications.push(req.body);
+        // Add new notification to entry
+        notifications.push(notification);
 
+        // Save the updated notifications JSON to S3
         await s3
             .putObject({
                 Body: JSON.stringify(notifications),
@@ -135,40 +129,18 @@ app.post("/save-notification", async (req, res) => {
             })
             .promise();
 
-        res.json({ success: true, message: "Notification saved successfully" });
+        console.log("Notification saved successfully:", notification);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error saving notification:", error);
+        throw error;
     }
-});
+};
 
-// Delete all notifications from S3
-app.delete("/delete-notifications", async (req, res) => {
-    const filename = "notifications.json";
-
-    try {
-        await s3
-            .deleteObject({
-                Bucket: bucketName,
-                Key: filename,
-            })
-            .promise();
-
-        res.json({
-            success: true,
-            message: "Notifications deleted successfully",
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
-
-// Endpoint to trigger an event and record a notification
+// Endpoint to create test notification
 app.get("/trigger-event", async (req, res) => {
     // This is where you put the code for your event
     const notification = {
-        message: "Event triggered",
+        message: "Test Notification",
         timestamp: new Date().toLocaleString("en-GB", { timeZone: "UTC" }),
     };
 
@@ -316,8 +288,8 @@ const getDataForGraph = function (data) {
     const dataJSON = data;
 
     // Extract dbValues and timestamps
-    const dbValues = dataJSON.feeds.map(entry => entry.field1);
-    const timestamps = dataJSON.feeds.map(entry => entry.created_at);
+    const dbValues = dataJSON.feeds.map((entry) => entry.field1);
+    const timestamps = dataJSON.feeds.map((entry) => entry.created_at);
 
     return [dbValues, timestamps];
 };
@@ -328,11 +300,11 @@ app.get("/live-db-data", async (req, res) => {
         // Fetch data from server ((input=100 since that covers roughly the last few hours))
         const dataJSON = await getThingSpeakData(100);
 
-        // Get latest dB value
-        const lastestValueData = getLatestValue(dataJSON);
-
         // Get 5 min average data
         const averageData = getAverageValue(dataJSON);
+
+        // Get latest dB value
+        const lastestValueData = getLatestValue(dataJSON);
 
         // Get data for graph
         const dataForGraph = getDataForGraph(dataJSON);
@@ -341,7 +313,7 @@ app.get("/live-db-data", async (req, res) => {
         const Data = {
             latestValue: lastestValueData,
             averageValue: averageData,
-            graphData: dataForGraph
+            graphData: dataForGraph,
         };
 
         // Send the data JSON to client
@@ -351,6 +323,44 @@ app.get("/live-db-data", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+// #############################################################################
+// Loops
+
+// Function to check average sound level and save notification if the threshold has been exceeded
+const checkAndSaveNotification = async function () {
+    try {
+        // Fetch data from the server (input=30 since that covers roughly the last 5 mins)
+        const dataJSON = await getThingSpeakData(30);
+
+        // Get 5 min average data
+        const averageData = getAverageValue(dataJSON);
+
+        // Set the threshold for triggering the notification (adjust as needed)
+        const threshold = 70;
+
+        // Trigger a notification if average dB level is above the threshold
+        if (averageData[0] >= threshold) {
+            // Trigger notification
+            const notification = {
+                message: `High sound level detected: ${averageData[0]} dB\nPlease try to be quieter!`,
+                timestamp: new Date().toLocaleString("en-GB", {
+                    timeZone: "UTC",
+                }),
+            };
+
+            // Save the notification to S3
+            await saveNotification(notification);
+            console.log("Notification triggered:", notification);
+        }
+    } catch (error) {
+        console.error("Error checking and saving notification:", error);
+    }
+};
+
+const intervalMinutes = 5;
+setInterval(checkAndSaveNotification, intervalMinutes * 60 * 1000);
+
 
 // #############################################################################
 // Catch all handler for all other requests
