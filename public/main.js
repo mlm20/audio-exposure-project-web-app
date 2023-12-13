@@ -182,7 +182,14 @@ const drawGraph = function (dbValues, timestamps) {
                     },
                     scaleLabel: {
                         display: true,
-                        labelString: "Timestamp",
+                        labelString: "Time (HH:mm)",
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: Infinity,
+                    },
+                    gridLines: {
+                        drawOnChartArea: true,
                     },
                 },
             ],
