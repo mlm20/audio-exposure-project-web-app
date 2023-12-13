@@ -158,7 +158,7 @@ const drawGraph = function (dbValues, timestamps) {
 
     // Data object, needed for chart.js
     const data = {
-        labels: timestamps,
+        labels: timestamps.map((timestamp) => moment(timestamp).format("HH:mm")), // Format timestamps as "HH:mm"
         datasets: [
             {
                 label: "Sound Level (dB)",
@@ -179,6 +179,9 @@ const drawGraph = function (dbValues, timestamps) {
                     time: {
                         unit: "minute",
                         tooltipFormat: "HH:mm",
+                        displayFormats: {
+                            minute: "HH:mm",
+                        },
                         parser: "HH:mm",
                     },
                     scaleLabel: {
