@@ -4,6 +4,7 @@ const AWS = require("aws-sdk");
 const fetch = require("isomorphic-fetch");
 const s3 = new AWS.S3();
 const bodyParser = require("body-parser");
+const math = require("mathjs");
 
 // Create app
 const app = express();
@@ -333,15 +334,13 @@ const referenceDB = 85;
 // Helper function to calculate noise dose
 const calculateNoiseDose = function (averageDecibel, exposureTime) {
     try {
-        console.log(averageDecibel);
-        console.log(exposureTime);
         // Formula from online source
         const noiseDose =
             (100 *
                 exposureTime *
-                Math.pow((averageDecibel - referenceDB) / 10)) /
+                math.pow(10, (averageDecibel - referenceDB) / 10)) /
             referenceTime;
-        console.log("Noise Dose: ",noiseDose);
+        console.log("Noise Dose: ", noiseDose);
         return noiseDose;
     } catch (error) {
         console.error("Error in noise dose calculation:", error);
@@ -370,7 +369,7 @@ app.post("/submit-noise-dose", express.json(), async (req, res) => {
 
         // Create notification
         const notification = {
-            message: `Noise Dose is ${noiseDose}%\nTake necessary precautions!`,
+            message: `Noise Dose is ${noiseDose.toFixed(1)}%\nTake necessary precautions!`,
             timestamp: new Date().toLocaleString("en-GB", { timeZone: "UTC" }),
         };
 

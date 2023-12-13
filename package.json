@@ -17,6 +17,7 @@
         "express": "^4.17.1",
         "express-session": "^1.17.1",
         "isomorphic-fetch": "^3.0.0",
+        "mathjs": "^12.2.0",
         "npm-install-all": "^1.1.21"
     },
     "devDependencies": {
