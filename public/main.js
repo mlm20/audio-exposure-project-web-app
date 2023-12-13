@@ -69,7 +69,7 @@ const updateNotificationsUI = function (notifications) {
         notifTime.classList.add("notifTime");
 
         // Update text content of notification element
-        notifMessage.textContent = notification.message;
+        notifMessage.innerHTML = notification.message;
         notifTime.textContent = notification.timestamp;
 
         // Append to container
