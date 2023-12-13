@@ -175,7 +175,6 @@ const drawGraph = function (dbValues, timestamps) {
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 lineTension: 0.1,
-                hidden: true,
             },
         ],
     };
@@ -214,8 +213,10 @@ const drawGraph = function (dbValues, timestamps) {
                 },
             },
         },
-        legend: {
-            display: false,
+        plugins: {
+            legend: {
+                display: false,
+            },
         },
     };
 
