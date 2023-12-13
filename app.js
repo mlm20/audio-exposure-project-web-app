@@ -325,6 +325,42 @@ app.get("/live-db-data", async (req, res) => {
 });
 
 // #############################################################################
+// Noise Dose
+
+const referenceTime = 8;
+const referenceDB = 85;
+
+// Helper function to calculate noise dose
+const calculateNoiseDose = function (averageDecibel, exposureTime) {
+    // Formula from online source
+    const noiseDose =
+        (100 * exposureTime * Math.pow((averageDecibel - referenceDB) / 10)) /
+        referenceTime;
+    return noiseDose;
+};
+
+// Endpoint for noise dose submissions
+app.post("/submit-noise-dose", express.json(), async (req, res) => {
+    const { averageDecibel, exposureTime } = req.body;
+
+    // Calculate noise dose
+    const noiseDose = calculateNoiseDose(averageDecibel, exposureTime);
+
+    // Create notification
+    const notification = {
+        message: `Noise Dose is ${noiseDose}%\nTake necessary precautions!`,
+        timestamp: new Date().toLocaleString("en-GB", { timeZone: "UTC" }),
+    };
+
+    // Save the notification to S3
+    await saveNotification(notification);
+    console.log("Notification triggered:", notification);
+
+    // Send a response to the client
+    res.json({ success: true, message: "Noise dose submitted" });
+});
+
+// #############################################################################
 // Loops
 
 // Function to check average sound level and save notification if the threshold has been exceeded
@@ -360,7 +396,6 @@ const checkAndSaveNotification = async function () {
 
 const intervalMinutes = 5;
 setInterval(checkAndSaveNotification, intervalMinutes * 60 * 1000);
-
 
 // #############################################################################
 // Catch all handler for all other requests
