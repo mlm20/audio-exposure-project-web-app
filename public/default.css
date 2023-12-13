@@ -24,6 +24,8 @@ h2 {
 
 h3 {
     background-color: white;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 div {
@@ -163,4 +165,8 @@ canvas {
 
 #dBIndicatorContainer {
     font-size: medium;
+}
+
+#notificationBox {
+    gap: 0px;
 }
