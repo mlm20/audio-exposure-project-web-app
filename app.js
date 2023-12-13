@@ -367,11 +367,24 @@ app.post("/submit-noise-dose", express.json(), async (req, res) => {
             parseFloat(exposureTime)
         );
 
-        // Create notification
-        const notification = {
-            message: `Noise Dose is ${noiseDose.toFixed(1)}%\nTake necessary precautions!`,
-            timestamp: new Date().toLocaleString("en-GB", { timeZone: "UTC" }),
-        };
+        let notification;
+        if (noiseDose > 100) {
+            notification = {
+                message: `Noise Dose is ${noiseDose.toFixed(1)}%
+                You have exceeded safe sound levels`,
+                timestamp: new Date().toLocaleString("en-GB", {
+                    timeZone: "UTC",
+                }),
+            };
+        } else {
+            notification = {
+                message: `Noise Dose is ${noiseDose.toFixed(1)}%
+                You are within safe levels`,
+                timestamp: new Date().toLocaleString("en-GB", {
+                    timeZone: "UTC",
+                }),
+            };
+        }
 
         // Save the notification to S3
         await saveNotification(notification);
