@@ -157,7 +157,13 @@ const drawGraph = function (dbValues, timestamps) {
     const ctx = document.getElementById("dbGraph").getContext("2d");
 
     // Format timestamps as "HH:mm"
-    const formattedTimestamps = timestamps.map((timestamp) => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric', hour12: false }).format(new Date(timestamp)));
+    const formattedTimestamps = timestamps.map((timestamp) =>
+        new Intl.DateTimeFormat("en-GB", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: false,
+        }).format(new Date(timestamp))
+    );
 
     // Data object, needed for chart.js
     const data = {
@@ -169,6 +175,7 @@ const drawGraph = function (dbValues, timestamps) {
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 lineTension: 0.1,
+                hidden: true,
             },
         ],
     };
