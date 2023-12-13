@@ -291,6 +291,9 @@ const submitNoiseDoseForm = async function () {
         const averageDecibelInput = document.getElementById("averageDecibel");
         const exposureTimeInput = document.getElementById("exposureTime");
 
+        console.log(averageDecibelInput);
+        console.log(exposureTimeInput);
+
         // Validate input values
         if (
             isNaN(parseFloat(averageDecibelInput.value)) ||
@@ -324,6 +327,10 @@ const submitNoiseDoseForm = async function () {
 
         // Update notifications after form submission
         fetchNotificationsAndUpdateUI();
+
+        // Clear text fields
+        averageDecibelInput.textContent = "";
+        exposureTimeInput.textContent = "";
     } catch (error) {
         console.error("Error submitting form:", error);
     }

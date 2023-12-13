@@ -64,6 +64,10 @@ canvas {
     background-color: inherit;
 }
 
+button {
+    cursor: pointer;
+}
+
 /* Custom classes */
 
 .primaryBox {
